@@ -1,0 +1,8 @@
+bundle exec unicorn -c config/unicorn.rb -d -E production
+
+TODO: Add unicorn to init.d
+https://www.digitalocean.com/community/tutorials/how-to-deploy-a-rails-app-with-unicorn-and-nginx-on-ubuntu-14-04
+
+
+links:
+https://github.com/serradura/awesome-activeadmin

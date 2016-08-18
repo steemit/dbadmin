@@ -1,0 +1,32 @@
+version: '2'
+services:
+  web:
+    build: .
+    command: bundle exec unicorn -E production -c config/unicorn.rb
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    links:
+     - db
+    environment:
+      MYSQL_HOST: db
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 123456
+      SECRET_KEY_BASE: abcdefg
+      RAILS_ENV: production
+      VIRTUAL_HOST: localhost
+  db:
+    image: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+    volumes:
+      - /Users/vz/steemit/mysql-data:/var/lib/mysql
+  proxy:
+    image: jwilder/nginx-proxy:latest
+    ports:
+      - "127.0.0.1:48443:80"
+    volumes:
+      - "/var/run/docker.sock:/tmp/docker.sock"
