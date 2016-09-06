@@ -15,8 +15,26 @@ ActiveAdmin.register User do
 
   show do
     attributes_table do
+      row :id
+      row :name
       row :picture do |u|
         image_tag u.picture_small, size: "128x128"
+      end
+    end
+    panel "Identities" do
+      table_for user.identities do
+        column :email
+        column :provider
+        column :verified
+        column :score
+        column :updated_at
+        column :created_at
+      end
+    end
+    panel "Accounts" do
+      table_for user.accounts do
+        column :name
+        column :created_at
       end
     end
     default_main_content

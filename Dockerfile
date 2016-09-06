@@ -8,10 +8,7 @@ WORKDIR $APP_HOME
 
 ADD Gemfile* $APP_HOME/
 RUN bundle install
-RUN bundle exec rake assets:precompile
-
 ADD . $APP_HOME
-
-
+RUN bundle exec rake assets:precompile
 
 EXPOSE 5000

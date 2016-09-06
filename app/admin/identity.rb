@@ -1,6 +1,7 @@
 ActiveAdmin.register Identity do
     index do
         column :id
+        column :user_id
         column :name
         column :email
         column :provider
@@ -8,7 +9,7 @@ ActiveAdmin.register Identity do
         column :score
         column :created_at
         actions defaults: false do |a|
-            item 'View', admin_account_path(a)
+            item 'View', admin_identity_path(a)
         end
     end
     filter :name

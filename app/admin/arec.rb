@@ -4,6 +4,7 @@ ActiveAdmin.register Arec do
 
   index do
     column :id
+    column :user_id
     column :account_name
     column :contact_email
     column :owner_key
