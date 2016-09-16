@@ -16,6 +16,6 @@ ActiveAdmin.register Identity do
     filter :email
     filter :verified
     filter :created_at
-    filter :provider, as: :check_boxes, collection: ['facebook', 'reddit']
+    filter :provider, as: :check_boxes, collection: ['facebook', 'reddit', 'email']
     filter :score, as: :numeric
 end

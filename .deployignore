@@ -2,3 +2,5 @@
 /tmp
 /.idea
 /public/assets
+docker-compose.yml
+config/
