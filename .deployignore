@@ -1,6 +1,7 @@
 /log
 /tmp
 /.idea
+.git
 /public/assets
 docker-compose.yml
 config/
