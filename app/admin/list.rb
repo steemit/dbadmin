@@ -12,9 +12,30 @@ ActiveAdmin.register List, as: 'Value' do
     end
   end
 
-  filter :kk
+  show do
+    attributes_table do
+      row :kk
+      row :value
+      row :action do  |rec|
+        if rec.kk == 'block-email-provider'
+          link_to('Mark all users as bots', mark_bots_admin_value_path(rec), method: :put)
+        end
+      end
+    end
+    active_admin_comments
+  end
+
+  filter :kk, label: 'Key'
   filter :value
   filter :created_at
+
+  form do |f|
+    f.inputs do
+      f.input :kk, label: 'Key'
+      f.input :value
+    end
+    f.actions
+  end
 
   permit_params :kk, :value
 
@@ -22,12 +43,10 @@ ActiveAdmin.register List, as: 'Value' do
   end
 
   controller do
-
     def mark_bots
       @lr = List.find(params[:id])
       @count = @lr.mark_bots(@lr.value)
     end
-
   end
 
 end
