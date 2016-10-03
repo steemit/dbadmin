@@ -20,6 +20,21 @@ ActiveAdmin.register User do
       row :picture do |u|
         image_tag u.picture_small, size: "128x128"
       end
+      row :invitation_link do  |rec|
+        if rec.email_identity
+          if rec.email_identity.verified and !rec.waiting_list
+            "https://steemit.com/create_account"
+          else
+            if !rec.email_identity.confirmation_code.blank?
+              "https://steemit.com/confirm_email/#{rec.email_identity.confirmation_code}"
+            else
+              link_to('Generate', invite_admin_user_path(rec), method: :put)
+            end
+          end
+        else
+          link_to('Generate', invite_admin_user_path(rec), method: :put)
+        end
+      end
     end
     panel "Identities" do
       table_for user.identities do
@@ -53,11 +68,29 @@ ActiveAdmin.register User do
 
   form do |f|
     f.inputs "User Details" do
+      f.input :email
       f.input :waiting_list
       f.input :bot
     end
     f.actions
   end
-  permit_params :waiting_list, :bot
+  permit_params :email, :waiting_list, :bot
+
+  member_action :invite, :method => :put do
+  end
+
+  controller do
+    def invite
+      @user = User.find(params[:id])
+      if @user.email_identity
+        if @user.email_identity.confirmation_code.blank?
+          @user.email_identity.generate_confirmation_code!
+        end
+      else
+        @user.generate_email_identity!
+      end
+      redirect_to action: "show", id: @user.id
+    end
+  end
 
 end

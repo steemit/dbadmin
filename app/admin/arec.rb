@@ -35,11 +35,9 @@ ActiveAdmin.register Arec do
   filter :updated_at
 
   member_action :approve, :method => :put do
-
   end
 
   controller do
-
     def approve
       @arec = Arec.find(params[:id])
       if !@arec.approved?
@@ -49,7 +47,6 @@ ActiveAdmin.register Arec do
         flash[:notice] = 'Account recovery request was already approved, please reuse the link below!'
       end
     end
-
   end
 
 end

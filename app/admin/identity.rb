@@ -18,4 +18,17 @@ ActiveAdmin.register Identity do
     filter :created_at
     filter :provider, as: :check_boxes, collection: ['facebook', 'reddit', 'email']
     filter :score, as: :numeric
+
+    form do |f|
+      f.inputs do
+        f.input :provider
+        f.input :name
+        f.input :email
+        f.input :score
+        f.input :confirmation_code
+      end
+      f.actions
+    end
+
+    permit_params :provider, :name, :email, :score, :confirmation_code
 end
