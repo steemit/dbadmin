@@ -21,7 +21,9 @@ ActiveAdmin.register User do
         image_tag u.picture_small, size: "128x128"
       end
       row :invitation_link do  |rec|
-        if rec.email_identity
+        if rec.accounts.first
+          'Already has account'
+        elsif rec.email_identity
           if rec.email_identity.verified and !rec.waiting_list
             "https://steemit.com/create_account"
           else
@@ -41,7 +43,9 @@ ActiveAdmin.register User do
         column :id do |i|
           link_to i.id, admin_identity_path(i)
         end
-        column :email
+        column :email_or_phone do |rec|
+          rec.email || rec.phone
+        end
         column :provider
         column :verified
         column :score

@@ -1,9 +1,13 @@
 ActiveAdmin.register Identity do
+    scope :all
+
     index do
         column :id
         column :user_id
         column :name
-        column :email
+        column :email_or_phone do |rec|
+          rec.email || rec.phone
+        end
         column :provider
         column :verified
         column :score
@@ -16,7 +20,7 @@ ActiveAdmin.register Identity do
     filter :email
     filter :verified
     filter :created_at
-    filter :provider, as: :check_boxes, collection: ['facebook', 'reddit', 'email']
+    filter :provider, as: :check_boxes, collection: ['email', 'phone', 'facebook', 'reddit']
     filter :score, as: :numeric
 
     form do |f|
