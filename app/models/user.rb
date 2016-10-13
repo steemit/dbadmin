@@ -10,7 +10,23 @@ class User < ActiveRecord::Base
       self.identities.find_by(provider: 'email')
     end
 
-    def generate_email_identity!
-      self.identities.create(confirmation_code: SecureRandom.uuid, provider: 'email')
+    def phone_identity
+      self.identities.find_by(provider: 'phone')
     end
+
+    def invite!
+      if email_identity
+        if email_identity.confirmation_code.blank?
+          email_identity.generate_confirmation_code!
+        end
+      else
+        self.identities.create(confirmation_code: SecureRandom.uuid, provider: 'email')
+      end
+
+      if !phone_identity
+        self.identities.create(verified: true, provider: 'phone')
+      end
+    end
+
+
 end

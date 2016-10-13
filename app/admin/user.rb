@@ -24,10 +24,10 @@ ActiveAdmin.register User do
         if rec.accounts.first
           'Already has account'
         elsif rec.email_identity
-          if rec.email_identity.verified and !rec.waiting_list
+          if rec.email_identity.verified and rec.phone_identity.verified and !rec.waiting_list
             "https://steemit.com/create_account"
           else
-            if !rec.email_identity.confirmation_code.blank?
+            if rec.phone_identity and rec.phone_identity.verified and !rec.email_identity.confirmation_code.blank?
               "https://steemit.com/confirm_email/#{rec.email_identity.confirmation_code}"
             else
               link_to('Generate', invite_admin_user_path(rec), method: :put)
@@ -86,13 +86,7 @@ ActiveAdmin.register User do
   controller do
     def invite
       @user = User.find(params[:id])
-      if @user.email_identity
-        if @user.email_identity.confirmation_code.blank?
-          @user.email_identity.generate_confirmation_code!
-        end
-      else
-        @user.generate_email_identity!
-      end
+      @user.invite!
       redirect_to action: "show", id: @user.id
     end
   end
