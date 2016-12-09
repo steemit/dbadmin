@@ -21,7 +21,7 @@ ActiveAdmin.register User do
         image_tag u.picture_small, size: "128x128"
       end
       row :invitation_link do  |rec|
-        if rec.accounts.first
+        if rec.accounts.first and !rec.accounts.first.ignored
           'Already has account'
         elsif rec.email_identity
           if rec.email_identity.verified and rec.phone_identity.verified and !rec.waiting_list
