@@ -18,6 +18,8 @@ ActiveAdmin.register Identity do
     end
     filter :name
     filter :email
+    filter :phone
+    filter :score
     filter :verified
     filter :created_at
     filter :provider, as: :check_boxes, collection: ['email', 'phone', 'facebook', 'reddit']

@@ -28,5 +28,9 @@ class User < ActiveRecord::Base
       end
     end
 
+    def display_name
+      name or email
+    end
+
 
 end
