@@ -31,6 +31,7 @@ ActiveAdmin.register Identity do
         f.input :name
         f.input :email
         f.input :score
+        f.input :verified
         f.input :confirmation_code
       end
       f.actions

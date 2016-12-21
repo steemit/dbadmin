@@ -25,7 +25,10 @@ class User < ActiveRecord::Base
 
       if !phone_identity
         self.identities.create(verified: true, provider: 'phone')
+      elsif !phone_identity.verified
+        phone_identity.update_attribute(:verified, true) 
       end
+
     end
 
     def display_name
