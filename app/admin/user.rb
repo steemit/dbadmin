@@ -24,8 +24,8 @@ ActiveAdmin.register User do
         if rec.accounts.first and !rec.accounts.first.ignored
           'Already has account'
         elsif rec.email_identity
-          if rec.email_identity.verified and rec.phone_identity.verified and !rec.waiting_list
-            "https://steemit.com/create_account"
+          if rec.email_identity.verified and rec.phone_identity and rec.phone_identity.verified and !rec.waiting_list
+            rec.email_identity.confirmation_code ? "https://steemit.com/confirm_email/#{rec.email_identity.confirmation_code}" : "https://steemit.com/create_account"
           else
             if rec.phone_identity and rec.phone_identity.verified and !rec.email_identity.confirmation_code.blank?
               "https://steemit.com/confirm_email/#{rec.email_identity.confirmation_code}"
