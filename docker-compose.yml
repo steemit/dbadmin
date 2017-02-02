@@ -7,15 +7,13 @@ services:
       - "5000:5000"
     volumes:
       - .:/app
-    links:
-     - db
     environment:
-      MYSQL_HOST: db
-      MYSQL_USER: root
-      MYSQL_PASSWORD: 
-      SECRET_KEY_BASE: abcdefg
-      RAILS_ENV: production
-      VIRTUAL_HOST: localhost
+      - MYSQL_HOST
+      - MYSQL_USER
+      - MYSQL_PASSWORD
+      - MYSQL_PORT
+      - SECRET_KEY_BASE
+      - RAILS_ENV
   # db:
   #   image: mysql
   #   ports:
