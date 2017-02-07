@@ -12,3 +12,6 @@ ADD . $APP_HOME
 RUN bundle exec rake assets:precompile
 
 EXPOSE 5000
+
+# entrypoint / cmd
+CMD bundle exec unicorn -E production -c config/unicorn.rb
