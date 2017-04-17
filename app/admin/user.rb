@@ -18,7 +18,11 @@ ActiveAdmin.register User do
       row :id
       row :name
       row :picture do |u|
-        image_tag u.picture_small, size: "128x128"
+        if u.picture_small
+            image_tag u.picture_small, size: "128x128"
+        else
+            '-'
+        end
       end
       row :invitation_link do  |rec|
         if rec.accounts.first and !rec.accounts.first.ignored
@@ -59,6 +63,7 @@ ActiveAdmin.register User do
           link_to a.id, admin_account_path(a)
         end
         column :name
+        column :ignored, as: :check_box
         column :created_at
       end
     end

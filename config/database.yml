@@ -9,8 +9,9 @@ default: &default
 
 development:
   <<: *default
-  password: <%= ENV['MYSQL_PASSWORD'] %>
-
+  host: <%= ENV['MYSQL_HOST'] %>
+  username: <%= ENV['MYSQL_USER'] %>
+  
 test:
   <<: *default
   database: admin_test
