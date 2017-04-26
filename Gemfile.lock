@@ -92,6 +92,7 @@ GEM
     formtastic (3.1.4)
       actionpack (>= 3.2.13)
     formtastic_i18n (0.6.0)
+    geoip2_compat (0.0.3)
     globalid (0.3.7)
       activesupport (>= 4.1.0)
     has_scope (0.6.0)
@@ -222,6 +223,7 @@ DEPENDENCIES
   coffee-rails (~> 4.1.0)
   devise
   draper
+  geoip2_compat
   jbuilder (~> 2.0)
   jquery-rails
   mysql2 (>= 0.3.13, < 0.5)
@@ -234,4 +236,4 @@ DEPENDENCIES
   web-console (~> 2.0)
 
 BUNDLED WITH
-   1.12.5
+   1.14.6

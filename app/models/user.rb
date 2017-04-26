@@ -1,6 +1,10 @@
 require 'securerandom'
+require 'geoip2_compat'
+
 
 class User < ActiveRecord::Base
+    @@geodb = GeoIP2Compat.new(Rails.root.join('GeoLite2-City.mmdb').to_s)
+
     has_many :accounts, dependent: :destroy
     has_many :identities, dependent: :destroy
 
@@ -26,13 +30,20 @@ class User < ActiveRecord::Base
       if !phone_identity
         self.identities.create(verified: true, provider: 'phone')
       elsif !phone_identity.verified
-        phone_identity.update_attribute(:verified, true) 
+        phone_identity.update_attribute(:verified, true)
       end
 
     end
 
     def display_name
       name or email
+    end
+
+    def location
+        return '' unless remote_ip
+        res = @@geodb.lookup(remote_ip)
+        puts 'location: ', remote_ip, res
+        return res ? "#{res[:city]}, #{res[:region_name]}, #{res[:country_name]}" : '-'
     end
 
 

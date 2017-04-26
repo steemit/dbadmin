@@ -7,7 +7,7 @@ ActiveAdmin.register User do
       image_tag u.picture_small, size: "32x32"
     end
     column :id
-    column :name
+    # column :name
     column :email
     column :created_at
     actions
@@ -16,14 +16,16 @@ ActiveAdmin.register User do
   show do
     attributes_table do
       row :id
-      row :name
-      row :picture do |u|
-        if u.picture_small
-            image_tag u.picture_small, size: "128x128"
-        else
-            '-'
-        end
-      end
+      row :email
+      row :location
+    #   row :name
+    #   row :picture do |u|
+    #     if u.picture_small
+    #         image_tag u.picture_small, size: "128x128"
+    #     else
+    #         '-'
+    #     end
+    #   end
       row :invitation_link do  |rec|
         if rec.accounts.first and !rec.accounts.first.ignored
           'Already has account'
