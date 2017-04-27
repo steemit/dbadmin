@@ -19,6 +19,7 @@ ActiveAdmin.register User do
     column :issues do |u|
       u.phone_warning ? status_tag('Phone', :warning) : ''
     end
+    column :account
     column :created_at
     actions
   end

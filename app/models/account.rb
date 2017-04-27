@@ -6,4 +6,8 @@ class Account < ActiveRecord::Base
         self.update_attributes(ignored: true)
     end
 
+    def display_name
+      self.name
+    end
+
 end

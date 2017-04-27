@@ -88,5 +88,8 @@ class User < ActiveRecord::Base
         return @georec ? @georec[:country_code] : '-'
     end
 
+    def account
+      self.accounts.where(:ignored => false).first
+    end
 
 end
