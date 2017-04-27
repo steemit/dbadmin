@@ -18,6 +18,37 @@ class User < ActiveRecord::Base
       self.identities.find_by(provider: 'phone')
     end
 
+    def display_email
+        return self.email if self.email
+        eid = self.identities.find_by(provider: 'email')
+        return eid ? eid.email : '-'
+    end
+
+    def get_phone
+      return @phone if @phone or @phone == false
+      phid = self.identities.find_by(provider: 'phone')
+      unless phid
+        @phone = false
+        return @phone
+      end
+      return @phone = Phonelib.parse(phid.phone)
+    end
+
+    def display_phone
+      phone = get_phone
+      return phone ? phone.full_international : '-'
+    end
+
+    def phone_warning
+      phone = get_phone
+      cc = country_code
+      return nil if not phone or cc == '-'
+      unless phone.countries.include? cc
+        return "User IP's country (#{cc}) doesn't match phone's (#{phone.countries.join(', ')})"
+      end
+      return nil
+    end
+
     def invite!
       if email_identity
         if email_identity.confirmation_code.blank?
@@ -41,9 +72,20 @@ class User < ActiveRecord::Base
 
     def location
         return '' unless remote_ip
-        res = @@geodb.lookup(remote_ip)
-        puts 'location: ', remote_ip, res
-        return res ? "#{res[:city]}, #{res[:region_name]}, #{res[:country_name]}" : '-'
+        @georec = @@geodb.lookup(remote_ip) unless @georec
+        return @georec ? "#{@georec[:city]}, #{@georec[:region_name]}, #{@georec[:country_name]}" : '-'
+    end
+
+    def country
+        return '' unless remote_ip
+        @georec = @@geodb.lookup(remote_ip) unless @georec
+        return @georec ? @georec[:country_name] : '-'
+    end
+
+    def country_code
+        return '' unless remote_ip
+        @georec = @@geodb.lookup(remote_ip) unless @georec
+        return @georec ? @georec[:country_code] : '-'
     end
 
 

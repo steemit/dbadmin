@@ -1,14 +1,24 @@
 ActiveAdmin.register User do
   scope :all
   scope :waiting_list
+  includes :identities
 
   index do
-    column :pic do |u|
-      image_tag u.picture_small, size: "32x32"
-    end
+    # column :pic do |u|
+    #   image_tag u.picture_small, size: "32x32"
+    # end
     column :id
     # column :name
-    column :email
+    column :country
+    column :email do |u|
+      u.display_email
+    end
+    column :phone do |u|
+      u.display_phone
+    end
+    column :issues do |u|
+      u.phone_warning ? status_tag('Phone', :warning) : ''
+    end
     column :created_at
     actions
   end
@@ -16,8 +26,14 @@ ActiveAdmin.register User do
   show do
     attributes_table do
       row :id
-      row :email
       row :location
+      row :email
+      row :phone do |u|
+        u.display_phone
+      end
+      row :issues do |u|
+        u.phone_warning
+      end
     #   row :name
     #   row :picture do |u|
     #     if u.picture_small
@@ -26,7 +42,7 @@ ActiveAdmin.register User do
     #         '-'
     #     end
     #   end
-      row :invitation_link do  |rec|
+      row :invitation_link do |rec|
         if rec.accounts.first and !rec.accounts.first.ignored
           'Already has account'
         elsif rec.email_identity
@@ -91,11 +107,15 @@ ActiveAdmin.register User do
   end
 
   controller do
+    # def scoped_collection
+    #   User.eager_load(:identities).where('users.id > 135310')
+    # end
     def invite
       @user = User.find(params[:id])
       @user.invite!
       redirect_to action: "show", id: @user.id
     end
   end
+
 
 end

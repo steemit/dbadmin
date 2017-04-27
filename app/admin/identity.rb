@@ -3,12 +3,14 @@ ActiveAdmin.register Identity do
 
     index do
         column :id
-        column :user_id
-        column :name
-        column :email_or_phone do |rec|
-          rec.email || rec.phone
+        column :user do |rec|
+            rec.user ? link_to(rec.user.email || rec.email, admin_user_path(rec.user_id)) : nil
         end
+        # column :name
         column :provider
+        column :email_or_phone do |rec|
+          rec.email || rec.display_phone
+        end
         column :verified
         column :score
         column :created_at
@@ -30,6 +32,7 @@ ActiveAdmin.register Identity do
         f.input :provider
         f.input :name
         f.input :email
+        f.input :phone
         f.input :score
         f.input :verified
         f.input :confirmation_code
