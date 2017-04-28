@@ -1,3 +1,13 @@
+def text_with_checkmark(text, title, checkmark)
+  if checkmark
+    icon = '&#10004;'.html_safe
+    color = '#0c0'
+    (text + ' ' + content_tag(:span, icon, :style => "color: #{color}", title: title)).html_safe
+  else
+    text
+  end
+end
+
 ActiveAdmin.register User do
   scope :all
   scope :waiting_list
@@ -11,13 +21,13 @@ ActiveAdmin.register User do
     # column :name
     column :country
     column :email do |u|
-      u.display_email
+       u.email_identity ? text_with_checkmark(u.display_email, 'Confirmed', u.email_identity.verified) : nil
     end
     column :phone do |u|
-      u.display_phone
+      u.phone_identity ? text_with_checkmark(u.display_phone, 'Confirmed', u.phone_identity.verified) : nil
     end
     column :issues do |u|
-      u.phone_warning ? status_tag('Phone', :warning) : ''
+      u.phone_warning ? status_tag('Phone', :warning, :title => u.phone_warning) : ''
     end
     column :account
     column :created_at

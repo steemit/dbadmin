@@ -11,22 +11,22 @@ class User < ActiveRecord::Base
     scope :waiting_list, -> { where(:waiting_list => 1) }
 
     def email_identity
-      self.identities.find_by(provider: 'email')
+      return @email_identity ||= self.identities.find_by(provider: 'email')
     end
 
     def phone_identity
-      self.identities.find_by(provider: 'phone')
+      return @phone_identity ||= self.identities.find_by(provider: 'phone')
     end
 
     def display_email
         return self.email if self.email
-        eid = self.identities.find_by(provider: 'email')
+        eid = email_identity
         return eid ? eid.email : '-'
     end
 
     def get_phone
       return @phone if @phone or @phone == false
-      phid = self.identities.find_by(provider: 'phone')
+      phid = phone_identity
       unless phid
         @phone = false
         return @phone
