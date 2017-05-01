@@ -89,7 +89,15 @@ class User < ActiveRecord::Base
     end
 
     def account
-      self.accounts.where(:ignored => false).first
+      return @account ||= self.accounts.where(:ignored => false).first
+    end
+
+    def approve!
+      self.update_attribute(:account_status, 'approved')
+    end
+
+    def reject!
+      self.update_attribute(:account_status, 'rejected')
     end
 
 end

@@ -2,7 +2,7 @@ def text_with_checkmark(text, title, checkmark)
   if checkmark
     icon = '&#10004;'.html_safe
     color = '#0c0'
-    (text + ' ' + content_tag(:span, icon, :style => "color: #{color}", title: title)).html_safe
+    (text + ' ' + content_tag(:span, icon, :style => "color: #{color}; cursor: default;", title: title)).html_safe
   else
     text
   end
@@ -30,8 +30,33 @@ ActiveAdmin.register User do
       u.phone_warning ? status_tag('Phone', :warning, :title => u.phone_warning) : ''
     end
     column :account
+    column :account_status do |u|
+      color = case u.account_status
+      when 'approved'
+        :ok
+      when 'waiting'
+        :orange
+      when 'rejected'
+        :red
+      when 'created'
+        :yes
+      else
+        :no
+      end
+      status_tag(u.account_status, color)
+    end
     column :created_at
-    actions
+    actions defaults: false do |u|
+      item('View', admin_user_path(u), method: :get)
+      if u.account_status == 'waiting'
+        item('Approve', approve_admin_user_path(u), method: :put)
+        item('Reject', reject_admin_user_path(u), method: :put)
+      elsif u.account_status == 'approved'
+        item('Reject', reject_admin_user_path(u), method: :put)
+      elsif u.account_status == 'rejected'
+        item('Approve', approve_admin_user_path(u), method: :put)
+      end
+    end
   end
 
   show do
@@ -92,8 +117,11 @@ ActiveAdmin.register User do
           link_to a.id, admin_account_path(a)
         end
         column :name
+        column :created do |a|
+            a.created.nil? ? '-' : status_tag(a.created, a.created ? :yes : :no)
+        end
         column :ignored, as: :check_box
-        column :created_at
+        column :updated_at
       end
     end
     default_main_content
@@ -114,8 +142,9 @@ ActiveAdmin.register User do
   end
   permit_params :email, :waiting_list, :bot
 
-  member_action :invite, :method => :put do
-  end
+  member_action :invite, :method => :put
+  member_action :approve, :method => :put
+  member_action :reject, :method => :put
 
   controller do
     # def scoped_collection
@@ -125,6 +154,18 @@ ActiveAdmin.register User do
       @user = User.find(params[:id])
       @user.invite!
       redirect_to action: "show", id: @user.id
+    end
+    def approve
+      @user = User.find(params[:id])
+      @user.approve!
+      flash[:notice] = "Approved user #{@user.email}"
+      redirect_to action: "index"
+    end
+    def reject
+      @user = User.find(params[:id])
+      @user.reject!
+      flash[:notice] = "Rejected user #{@user.email}"
+      redirect_to action: "index"
     end
   end
 

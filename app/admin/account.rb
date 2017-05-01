@@ -7,8 +7,11 @@ ActiveAdmin.register Account do
     column :name
     column :remote_ip
     column :referrer
+    column :created do |a|
+        a.created.nil? ? '-' : status_tag(a.created, a.created ? :yes : :no)
+    end
     column :ignored, as: :check_box
-    column :created_at
+    column :updated_at
     actions defaults: false do |a|
       item 'View', admin_account_path(a)
       item 'Edit', edit_admin_account_path(a)
@@ -23,10 +26,11 @@ ActiveAdmin.register Account do
   form do |f|
     f.inputs "Account Details" do
       f.input :ignored
+      f.input :created
     end
     f.actions
   end
-  permit_params :ignored
+  permit_params :ignored, :created
 
   member_action :ignore, :method => :put do
   end
