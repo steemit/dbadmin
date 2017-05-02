@@ -1,6 +1,7 @@
 require 'securerandom'
 require 'geoip2_compat'
-
+require 'sendgrid-ruby'
+include SendGrid
 
 class User < ActiveRecord::Base
     @@geodb = GeoIP2Compat.new(Rails.root.join('GeoLite2-City.mmdb').to_s)
@@ -93,6 +94,34 @@ class User < ActiveRecord::Base
     end
 
     def approve!
+      eid = self.email_identity
+      if !eid or eid.confirmation_code.blank? or eid.email.blank?
+        logger.error "!!! Signup approve error: user's email not found [##{self.id}]"
+        return
+      end
+      data = JSON.parse(%Q{{
+        "personalizations": [
+          {
+            "to": [
+              {
+                "email": "#{eid.email}"
+              }
+            ],
+            "substitutions": {
+              "confirmation_code": "#{eid.confirmation_code}"
+            },
+            "subject": "Your Steemit account has been approved"
+          }
+        ],
+        "from": {
+          "email": "test@example.com"
+        },
+        "template_id": "4db87b24-8003-4ae7-b80f-c509148273e2"
+      }})
+      sg = SendGrid::API.new(api_key: ENV['SDC_SENDGRID_API_KEY'])
+      response = sg.client.mail._("send").post(request_body: data)
+      logger.info "Sent signup approved email to #{eid.email} with status code #{response.status_code}"
+
       self.update_attribute(:account_status, 'approved')
     end
 
