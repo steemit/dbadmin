@@ -114,9 +114,9 @@ class User < ActiveRecord::Base
           }
         ],
         "from": {
-          "email": "test@example.com"
+          "email": "#{ENV['SDC_SENDGRID_FROM']}"
         },
-        "template_id": "4db87b24-8003-4ae7-b80f-c509148273e2"
+        "template_id": "#{ENV['SDC_SENDGRID_APPROVETEMPLATE']}"
       }})
       sg = SendGrid::API.new(api_key: ENV['SDC_SENDGRID_API_KEY'])
       response = sg.client.mail._("send").post(request_body: data)
