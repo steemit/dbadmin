@@ -1,7 +1,6 @@
 require 'securerandom'
 require 'geoip2_compat'
 require 'sendgrid-ruby'
-include SendGrid
 
 class User < ActiveRecord::Base
     @@geodb = GeoIP2Compat.new(Rails.root.join('GeoLite2-City.mmdb').to_s)
@@ -135,6 +134,9 @@ class User < ActiveRecord::Base
       sg = SendGrid::API.new(api_key: ENV['SDC_SENDGRID_API_KEY'])
       response = sg.client.mail._("send").post(request_body: data)
       logger.info "Sent signup approved email to #{eid.email} with status code #{response.status_code}"
+      if response.status_code.to_i >= 300
+        logger.error response.inspect
+      end
 
       self.update_attribute(:account_status, 'approved')
     end
