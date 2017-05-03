@@ -9,6 +9,16 @@ def text_with_checkmark(text, title, checkmark)
   end
 end
 
+def issues_to_status_tags(warnings)
+  return '' if warnings.empty?
+  res = ''
+  puts warnings.inspect
+  warnings.each do |k, v|
+    status_tag(k, :warning, :title => v)
+  end
+  return res
+end
+
 ActiveAdmin.register User do
   scope :all
   scope :waiting_list
@@ -28,7 +38,10 @@ ActiveAdmin.register User do
       u.phone_identity ? text_with_checkmark(u.display_phone, 'Confirmed', u.phone_identity.verified) : nil
     end
     column :issues do |u|
-      u.phone_warning ? status_tag('Phone', :warning, :title => u.phone_warning) : ''
+      u.issues.each do |k, v|
+        status_tag(k, :warning, :title => v) if v
+      end
+      nil
     end
     column :account
     column :account_status do |u|
@@ -69,7 +82,7 @@ ActiveAdmin.register User do
         u.display_phone
       end
       row :issues do |u|
-        u.phone_warning
+        u.issues.select{|k, v| v}.map{|k,v| v}.join('; ')
       end
     #   row :name
     #   row :picture do |u|

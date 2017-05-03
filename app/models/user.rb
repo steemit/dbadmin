@@ -9,7 +9,7 @@ class User < ActiveRecord::Base
     has_many :accounts, dependent: :destroy
     has_many :identities, dependent: :destroy
 
-    scope :waiting_list, -> { where(:waiting_list => 1) }
+    scope :waiting_list, -> { where(:account_status => 'waiting') }
 
     def email_identity
       return @email_identity ||= self.identities.find_by(provider: 'email')
@@ -40,7 +40,7 @@ class User < ActiveRecord::Base
       return phone ? phone.full_international : '-'
     end
 
-    def phone_warning
+    def phone_issue
       phone = get_phone
       cc = country_code
       return nil if not phone or cc == '-'
@@ -48,6 +48,20 @@ class User < ActiveRecord::Base
         return "User IP's country (#{cc}) doesn't match phone's (#{phone.countries.join(', ')})"
       end
       return nil
+    end
+
+    def email_issue
+      eid = email_identity
+      return 'Email is emepty' if !eid or eid.email.blank?
+      parsed_email = eid.email.match(/^.+\@.*?([\w\d-]+\.\w+)$/)
+      return 'Incorrect email' unless parsed_email
+      blocked_provider = List.where(kk: 'block-email-provider', value: parsed_email[1]).first
+      return 'Provider is in blacklist' if blocked_provider
+      return nil
+    end
+
+    def issues
+      {phone: phone_issue, email: email_issue}
     end
 
     def invite!
