@@ -51,7 +51,7 @@ class User < ActiveRecord::Base
 
     def email_issue
       eid = email_identity
-      return 'Email is emepty' if !eid or eid.email.blank?
+      return 'Email is empty' if !eid or eid.email.blank?
       parsed_email = eid.email.match(/^.+\@.*?([\w\d-]+\.\w+)$/)
       return 'Incorrect email' unless parsed_email
       blocked_provider = List.where(kk: 'block-email-provider', value: parsed_email[1]).first

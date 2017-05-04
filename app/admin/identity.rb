@@ -39,6 +39,5 @@ ActiveAdmin.register Identity do
       end
       f.actions
     end
-
-    permit_params :provider, :name, :email, :score, :confirmation_code
+    permit_params :provider, :name, :email, :phone, :score, :verified, :confirmation_code
 end
