@@ -7,9 +7,9 @@ ActiveAdmin.register Account do
     column :name
     column :remote_ip
     column :referrer
-    column :created do |a|
-        a.created.nil? ? '-' : status_tag(a.created, a.created ? :yes : :no)
-    end
+    # column :created do |a|
+    #     a.created.nil? ? '-' : status_tag(a.created, a.created ? :yes : :no)
+    # end
     column :ignored, as: :check_box
     column :updated_at
     actions defaults: false do |a|
