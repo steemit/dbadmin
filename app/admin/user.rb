@@ -173,13 +173,13 @@ ActiveAdmin.register User do
       @user = User.find(params[:id])
       @user.approve!
       flash[:notice] = "Approved user #{@user.email}"
-      redirect_to action: "index"
+      redirect_to :back
     end
     def reject
       @user = User.find(params[:id])
       @user.reject!
       flash[:notice] = "Rejected user #{@user.email}"
-      redirect_to action: "index"
+      redirect_to :back
     end
   end
 
