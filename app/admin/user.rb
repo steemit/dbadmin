@@ -39,7 +39,7 @@ ActiveAdmin.register User do
     end
     column :issues do |u|
       u.issues.each do |k, v|
-        status_tag(k, :warning, :title => v) if v
+        status_tag(k, :warning, :title => v) unless v.blank?
       end
       nil
     end
