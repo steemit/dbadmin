@@ -143,6 +143,7 @@ ActiveAdmin.register User do
 
   filter :name
   filter :email
+  filter :account_status, as: :check_boxes, collection: ['waiting', 'approved', 'rejected', 'created']
   filter :created_at
   filter :updated_at
 
