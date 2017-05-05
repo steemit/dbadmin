@@ -44,8 +44,11 @@ class User < ActiveRecord::Base
       cc = country_code
       return nil if not phone or cc == '-'
       res = ''
-      if phone_identity.score >= 400
+      pi = phone_identity
+      if pi and pi.score and pi.score >= 400
         res = "TeleSign score is too high: #{phone_identity.score}; "
+      elsif !pi or !pi.score
+        res = "There is no phone or no TeleSign score; "
       end
       unless phone.countries.include? cc
         res << "\nUser IP's country (#{cc}) doesn't match phone's (#{phone.countries.join(', ')})"
