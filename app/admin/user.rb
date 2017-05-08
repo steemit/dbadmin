@@ -195,7 +195,7 @@ ActiveAdmin.register User do
         next unless user.account_status == 'waiting'
         eid = user.email_identity
         next unless eid
-        next unless eid.email.match(/@gmail\.com$/i)
+        next unless eid.email and eid.email.match(/@(gmail|yahoo|hotmail)\.com$/i)
         next unless eid.verified
 
         pid = user.phone_identity
