@@ -148,7 +148,7 @@ ActiveAdmin.register User do
   filter :updated_at
 
   action_item do
-    link_to "Auto-approve 10", auto_approve_admin_users_path
+    link_to "Auto-approve Page", auto_approve_admin_users_path(params), :method => :put
   end
 
   form do |f|
@@ -188,8 +188,10 @@ ActiveAdmin.register User do
       redirect_to :back
     end
     def auto_approve
+      start_page = params[:page] ? params[:page].to_i - 1 : 0
+      order = params[:order] || 'id_desc'
       approved = 0
-      User.waiting_list.each do |user|
+      User.order(order.gsub('_', ' ')).offset(start_page * per_page).limit(per_page).each do |user|
         eid = user.email_identity
         next unless eid
         next unless eid.email.match(/@gmail\.com$/i)
@@ -203,7 +205,6 @@ ActiveAdmin.register User do
 
         user.approve!
         approved += 1
-        break if approved == 10
       end
 
       flash[:notice] = "Auto-approved #{approved} accounts."

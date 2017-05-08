@@ -114,6 +114,7 @@ class User < ActiveRecord::Base
     end
 
     def approve!
+      logger.info "Approve user ##{id} #{display_name}"
       eid = self.email_identity
       if !eid or eid.confirmation_code.blank? or eid.email.blank?
         logger.error "!!! Signup approve error: user's email not found [##{self.id}]"
