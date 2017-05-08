@@ -63,12 +63,12 @@ ActiveAdmin.register User do
     actions defaults: false do |u|
       item('View', admin_user_path(u), method: :get)
       if u.account_status == 'waiting'
-        item('Approve', approve_admin_user_path(u), method: :put)
+        if u.can_be_approved? then item('Approve', approve_admin_user_path(u), method: :put) end
         item('Reject', reject_admin_user_path(u), method: :put)
       elsif u.account_status == 'approved'
         item('Reject', reject_admin_user_path(u), method: :put)
       elsif u.account_status == 'rejected'
-        item('Approve', approve_admin_user_path(u), method: :put)
+        if u.can_be_approved? then item('Approve', approve_admin_user_path(u), method: :put) end
       end
     end
   end
