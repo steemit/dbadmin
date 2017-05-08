@@ -193,6 +193,7 @@ ActiveAdmin.register User do
       approved = 0
       User.order(order.gsub('_', ' ')).offset(start_page * per_page).limit(per_page).each do |user|
         next unless user.account_status == 'waiting'
+        next unless user.account
         eid = user.email_identity
         next unless eid
         next unless eid.email and eid.email.match(/@(gmail|yahoo|hotmail|outlook)\.com$/i)
