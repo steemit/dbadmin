@@ -147,6 +147,10 @@ ActiveAdmin.register User do
   filter :created_at
   filter :updated_at
 
+  action_item do
+    link_to "Auto-approve 10", auto_approve_admin_users_path
+  end
+
   form do |f|
     f.inputs "User Details" do
       f.input :email
@@ -160,6 +164,7 @@ ActiveAdmin.register User do
   member_action :invite, :method => :put
   member_action :approve, :method => :put
   member_action :reject, :method => :put
+  collection_action :auto_approve, :method => :put
 
   controller do
     # def scoped_collection
@@ -180,6 +185,28 @@ ActiveAdmin.register User do
       @user = User.find(params[:id])
       @user.reject!
       flash[:notice] = "Rejected user #{@user.email}"
+      redirect_to :back
+    end
+    def auto_approve
+      approved = 0
+      User.waiting_list.each do |user|
+        eid = user.email_identity
+        next unless eid
+        next unless eid.email.match(/@gmail\.com$/i)
+        next unless eid.verified
+
+        pid = user.phone_identity
+        next unless pid
+        next unless pid.score and pid.score < 400
+        next unless user.get_phone.countries.include?('US')
+        next unless user.country_code == 'US'
+
+        user.approve!
+        approved += 1
+        break if approved == 10
+      end
+
+      flash[:notice] = "Auto-approved #{approved} accounts."
       redirect_to :back
     end
   end
