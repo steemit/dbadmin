@@ -19,9 +19,8 @@ class User < ActiveRecord::Base
     end
 
     def display_email
-        return self.email if self.email
         eid = email_identity
-        return eid ? eid.email : '-'
+        return eid ? eid.email : nil
     end
 
     def get_phone
