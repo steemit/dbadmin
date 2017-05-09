@@ -53,9 +53,11 @@ class User < ActiveRecord::Base
       if phone.countries and !phone.countries.empty? and !phone.countries.include? cc
         res << "\nUser IP's country (#{cc}) doesn't match phone's (#{phone.countries.join(', ')}); "
       end
-      List.blocked_phones.each do |prefix|
-        if phone_identity.phone.start_with? prefix.value
-          res << "Blacklist match: #{prefix.value}; "
+      unless phone_identity.phone.blank?
+        List.blocked_phones.each do |prefix|
+          if phone_identity.phone.start_with? prefix.value
+            res << "Blacklist match: #{prefix.value}; "
+          end
         end
       end
       return res
