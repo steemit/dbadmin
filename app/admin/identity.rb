@@ -22,9 +22,10 @@ ActiveAdmin.register Identity do
     filter :email
     filter :phone
     filter :score
+    filter :confirmation_code
     filter :verified
     filter :created_at
-    filter :provider, as: :check_boxes, collection: ['email', 'phone', 'facebook', 'reddit']
+    filter :provider, as: :check_boxes, collection: ['email', 'phone'] #, 'facebook', 'reddit']
     filter :score, as: :numeric
 
     form do |f|

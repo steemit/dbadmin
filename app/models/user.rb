@@ -50,7 +50,7 @@ class User < ActiveRecord::Base
       elsif !pi or !pi.score
         res = "There is no phone or no TeleSign score; "
       end
-      unless phone.countries.include? cc
+      if phone.countries and !phone.countries.empty? and !phone.countries.include? cc
         res << "\nUser IP's country (#{cc}) doesn't match phone's (#{phone.countries.join(', ')}); "
       end
       List.blocked_phones.each do |prefix|
