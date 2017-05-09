@@ -196,14 +196,18 @@ ActiveAdmin.register User do
         next unless user.account
         eid = user.email_identity
         next unless eid
-        next unless eid.email and eid.email.match(/@(gmail|yahoo|hotmail|outlook)\.com$/i)
+        # next unless eid.email and eid.email.match(/@(gmail|yahoo|hotmail|outlook)\.com$/i)
         next unless eid.verified
 
         pid = user.phone_identity
         next unless pid
+        next unless pid.verified
         next unless pid.score and pid.score < 400
-        next unless user.get_phone.countries.include?('US')
-        next unless user.country_code == 'US'
+        # next unless user.get_phone.countries.include?('US')
+        # next unless user.country_code == 'US'
+
+        issues = user.issues
+        next if !issues[:phone].blank? or !issues[:email].blank?
 
         user.approve!
         approved += 1

@@ -1,4 +1,7 @@
 ActiveAdmin.register List, as: 'Value' do
+  scope :all
+  scope :blocked_emails
+  scope :blocked_phones
   menu label: 'Vars/Params'
   index do
     column :id

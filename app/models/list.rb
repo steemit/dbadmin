@@ -1,6 +1,8 @@
 class List < ActiveRecord::Base
   self.table_name = 'lists'
   validates :value, uniqueness: { scope: :kk }
+  scope :blocked_emails, -> { where(:kk => 'block-email-provider') }
+  scope :blocked_phones, -> { where(:kk => 'block-phone-prefix') }
 
   def mark_bots(email_provider)
     users = User.where("email LIKE '%#{email_provider}' and bot=0")

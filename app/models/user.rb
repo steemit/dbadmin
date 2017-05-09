@@ -40,8 +40,9 @@ class User < ActiveRecord::Base
 
     def phone_issue
       phone = get_phone
+      return 'Phone is empty; ' if not phone
       cc = country_code
-      return nil if not phone or cc == '-'
+      return 'Cannot detect country by IP (needed for phone verification); ' if cc.blank? or cc == '-'
       res = ''
       pi = phone_identity
       if pi and pi.score and pi.score >= 400
@@ -50,7 +51,12 @@ class User < ActiveRecord::Base
         res = "There is no phone or no TeleSign score; "
       end
       unless phone.countries.include? cc
-        res << "\nUser IP's country (#{cc}) doesn't match phone's (#{phone.countries.join(', ')})"
+        res << "\nUser IP's country (#{cc}) doesn't match phone's (#{phone.countries.join(', ')}); "
+      end
+      List.blocked_phones.each do |prefix|
+        if phone_identity.phone.start_with? prefix.value
+          res << "Blacklist match: #{prefix.value}; "
+        end
       end
       return res
     end
@@ -123,8 +129,8 @@ class User < ActiveRecord::Base
 
     def approve!
       logger.info "Approve user ##{id} #{display_name}"
-      if self.account_status == 'approved'
-        logger.error "User ##{id} #{display_name} is already approved"
+      if self.account_status == 'approved' or self.account_status == 'created'
+        logger.error "User ##{id} #{display_name} is already approved or created"
         return
       end
       eid = self.email_identity
