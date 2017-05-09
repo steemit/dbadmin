@@ -79,17 +79,12 @@ class User < ActiveRecord::Base
       if email_identity
         if email_identity.confirmation_code.blank?
           email_identity.generate_confirmation_code!
+          email_identity.update_attribute(:verified, true)
         end
       else
-        self.identities.create(confirmation_code: SecureRandom.uuid, provider: 'email')
+        self.identities.create(confirmation_code: SecureRandom.uuid, provider: 'email', verified: true)
       end
-
-      if !phone_identity
-        self.identities.create(verified: true, provider: 'phone')
-      elsif !phone_identity.verified
-        phone_identity.update_attribute(:verified, true)
-      end
-
+      self.update_attribute(:account_status, 'approved')
     end
 
     def display_name

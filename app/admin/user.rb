@@ -93,17 +93,11 @@ ActiveAdmin.register User do
     #     end
     #   end
       row :invitation_link do |rec|
-        if rec.accounts.first and !rec.accounts.first.ignored
-          'Already has account'
-        elsif rec.email_identity
-          if rec.email_identity.verified and rec.phone_identity and rec.phone_identity.verified and !rec.waiting_list
-            rec.email_identity.confirmation_code ? "https://steemit.com/confirm_email/#{rec.email_identity.confirmation_code}" : "https://steemit.com/create_account"
+        if rec.email_identity
+          if rec.email_identity.verified and rec.email_identity.confirmation_code
+            "https://steemit.com/start/#{rec.email_identity.confirmation_code}"
           else
-            if rec.phone_identity and rec.phone_identity.verified and !rec.email_identity.confirmation_code.blank?
-              "https://steemit.com/confirm_email/#{rec.email_identity.confirmation_code}"
-            else
-              link_to('Generate', invite_admin_user_path(rec), method: :put)
-            end
+            link_to('Generate', invite_admin_user_path(rec), method: :put)
           end
         else
           link_to('Generate', invite_admin_user_path(rec), method: :put)
