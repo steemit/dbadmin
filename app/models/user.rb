@@ -117,7 +117,7 @@ class User < ActiveRecord::Base
 
     def can_be_approved?
       eid = self.email_identity
-      return false unless self.account
+      # return false unless self.account
       return false unless eid and eid.email and eid.verified
       pid = self.phone_identity
       return false unless pid and pid.phone and pid.verified
