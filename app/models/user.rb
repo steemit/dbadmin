@@ -160,7 +160,9 @@ class User < ActiveRecord::Base
         logger.error response.inspect
       end
 
-      self.update_attribute(:account_status, 'approved')
+      if self.account_status != 'created'
+        self.update_attribute(:account_status, 'approved')
+      end
     end
 
     def reject!
