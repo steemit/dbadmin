@@ -84,9 +84,8 @@ class User < ActiveRecord::Base
           email_identity.update_attribute(:verified, true)
         end
       else
-        self.identities.create(confirmation_code: SecureRandom.uuid, provider: 'email', verified: true)
+        self.identities.create(confirmation_code: SecureRandom.uuid, provider: 'email', verified: true, email: self.email)
       end
-      self.update_attribute(:account_status, 'approved')
     end
 
     def display_name
