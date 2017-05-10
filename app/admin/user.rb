@@ -8,6 +8,22 @@ def issues_to_status_tags(warnings)
   return res
 end
 
+def render_account_status_tag(u)
+  color = case u.account_status
+  when 'approved'
+    :ok
+  when 'waiting'
+    :orange
+  when 'rejected'
+    :red
+  when 'created'
+    :yes
+  else
+    :no
+  end
+  status_tag(u.account_status, color)
+end
+
 ActiveAdmin.register User do
   scope :all
   scope :waiting_list
@@ -34,19 +50,7 @@ ActiveAdmin.register User do
     end
     column :account
     column :account_status do |u|
-      color = case u.account_status
-      when 'approved'
-        :ok
-      when 'waiting'
-        :orange
-      when 'rejected'
-        :red
-      when 'created'
-        :yes
-      else
-        :no
-      end
-      status_tag(u.account_status, color)
+      render_account_status_tag(u)
     end
     column :created_at
     actions defaults: false do |u|
@@ -91,6 +95,12 @@ ActiveAdmin.register User do
         else
           link_to('Generate', invite_admin_user_path(rec), method: :put)
         end
+      end
+      row :account_status do |u|
+        render_account_status_tag(u)
+      end
+      row :actions do |u|
+        u.can_be_approved? ? link_to('Approve', approve_admin_user_path(u), method: :put).html_safe : ''
       end
     end
     panel "Identities" do
