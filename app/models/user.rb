@@ -125,10 +125,10 @@ class User < ActiveRecord::Base
 
     def approve!
       logger.info "Approve user ##{id} #{display_name}"
-      if self.account_status == 'approved' or self.account_status == 'created'
-        logger.error "User ##{id} #{display_name} is already approved or created"
-        return
-      end
+      # if self.account_status == 'approved' or self.account_status == 'created'
+      #   logger.error "User ##{id} #{display_name} is already approved or created"
+      #   return
+      # end
       eid = self.email_identity
       if !eid or eid.confirmation_code.blank? or eid.email.blank?
         logger.error "!!! Signup approve error: user's email not found [##{self.id}]"
