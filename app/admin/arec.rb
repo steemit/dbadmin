@@ -6,8 +6,13 @@ ActiveAdmin.register Arec do
   index do
     column :id
     column :user_id
-    column :account_name
-    column :contact_email
+    column :account do |rec|
+      account = rec.account
+      account ? link_to(rec.account_name, admin_account_path(rec.account)) : rec.account_name
+    end
+    column :contact_email do |rec|
+       text_with_checkmark(rec.contact_email, 'Email matches original email', rec.email_match?)
+    end
     column :owner_key
     column :provider
     column :status
