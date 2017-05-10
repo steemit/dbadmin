@@ -120,7 +120,7 @@ class User < ActiveRecord::Base
       # return false unless self.account
       return false unless eid and eid.email # and eid.verified
       pid = self.phone_identity
-      return false unless pid and pid.phone and pid.verified
+      return false unless pid and pid.phone # and pid.verified
       return true
     end
 
