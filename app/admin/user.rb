@@ -100,7 +100,7 @@ ActiveAdmin.register User do
         render_account_status_tag(u)
       end
       row :actions do |u|
-        u.can_be_approved? ? link_to('Approve', approve_admin_user_path(u), method: :put).html_safe : ''
+        link_to('Approve', approve_admin_user_path(u), method: :put).html_safe
       end
     end
     panel "Identities" do
