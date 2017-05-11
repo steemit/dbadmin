@@ -12,17 +12,24 @@ ActiveAdmin.register_page "Dashboard" do
 
     columns do
       column do
-        panel "Number of accounts (last 24 hours)" do
-            text_node Account.select("count(*) as cnt").where("created_at >= (NOW() - INTERVAL 1 DAY)").take.cnt
+        panel "Number of users / accounts (24 hours)" do
+            text_node User.select("count(*) as cnt").where("created_at >= (NOW() - INTERVAL 1 DAY)").take.cnt
+            text_node ' / '
+            text_node Account.select("count(*) as cnt").where("created_at >= (NOW() - INTERVAL 1 DAY) and created=1").take.cnt
         end
 
         panel "Number of accounts (last 20 days)" do
-          table_for Account.select("DATE(created_at) as date, count(*) as cnt").group(:date).order("date desc").limit(30) do
+          connection = ActiveRecord::Base.connection
+          table_for connection.exec_query("select DATE(u.created_at) as date, count(a.id) as acnt, count(u.id) as ucnt from users u left outer join accounts a on u.id=a.user_id and a.created=1 group by date order by date desc limit 30") do
+             #Account.select("DATE(created_at) as date, count(*) as cnt").group(:date).order("date desc").limit(30) do
             column :date do |r|
-              r.date.strftime("%m/%d/%Y")
+              r['date'].strftime("%m/%d/%Y")
             end
-            column :count do |r|
-              r.cnt
+            column :users do |r|
+              r['ucnt']
+            end
+            column :accounts do |r|
+              r['acnt']
             end
           end
         end
