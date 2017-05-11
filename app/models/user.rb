@@ -11,11 +11,11 @@ class User < ActiveRecord::Base
     scope :waiting_list, -> { where(:account_status => 'waiting') }
 
     def email_identity
-      return @email_identity ||= self.identities.find_by(provider: 'email')
+      return @email_identity ||= self.identities.where(provider: 'email').order('id desc').first
     end
 
     def phone_identity
-      return @phone_identity ||= self.identities.find_by(provider: 'phone')
+      return @phone_identity ||= self.identities.where(provider: 'phone').order('id desc').first
     end
 
     def display_email
@@ -111,7 +111,7 @@ class User < ActiveRecord::Base
     end
 
     def account
-      return @account ||= self.accounts.where(:ignored => false).first
+      return @account ||= self.accounts.where(:ignored => false).order('id desc').first
     end
 
     def can_be_approved?

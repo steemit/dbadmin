@@ -190,7 +190,7 @@ ActiveAdmin.register User do
         eid = user.email_identity
         next unless eid
         # next unless eid.email and eid.email.match(/@(gmail|yahoo|hotmail|outlook)\.com$/i)
-        next unless eid.verified
+        # next unless eid.verified
 
         pid = user.phone_identity
         next unless pid
