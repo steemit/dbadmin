@@ -87,7 +87,7 @@ ActiveAdmin.register User do
     #   end
       row :invitation_link do |rec|
         if rec.email_identity
-          if rec.email_identity.verified and rec.email_identity.confirmation_code
+          if rec.email_identity.confirmation_code
             "https://steemit.com/start/#{rec.email_identity.confirmation_code}"
           else
             link_to('Generate', invite_admin_user_path(rec), method: :put)
