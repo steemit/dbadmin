@@ -35,12 +35,12 @@ ActiveAdmin.register User do
     # end
     column :id
     # column :name
-    column :country
+    column :location
     column :email do |u|
        u.email_identity ? text_with_checkmark(u.display_email, 'Confirmed', u.email_identity.verified) : nil
     end
     column :phone do |u|
-      u.phone_identity ? text_with_checkmark(u.display_phone, 'Confirmed', u.phone_identity.verified) : nil
+      u.phone_identity ? text_with_checkmark(u.display_phone, 'Confirmed', u.phone_identity.verified).html_safe + content_tag(:span, ' ' + u.phone_identity.score.to_s, title: 'TeleSign Score', class: 'small quiet')  : nil
     end
     column :issues do |u|
       u.issues.each do |k, v|
@@ -88,7 +88,7 @@ ActiveAdmin.register User do
       row :invitation_link do |rec|
         if rec.email_identity
           if rec.email_identity.confirmation_code
-            "https://steemit.com/start/#{rec.email_identity.confirmation_code}"
+            text_field_tag 'invitation_link', "https://steemit.com/start/#{rec.email_identity.confirmation_code}",  size: 60, disabled: true
           else
             link_to('Generate', invite_admin_user_path(rec), method: :put)
           end
@@ -112,10 +112,11 @@ ActiveAdmin.register User do
           rec.email || rec.phone
         end
         column :provider
+        column :confirmation_code
         column :verified
         column :score
-        column :updated_at
         column :created_at
+        column :updated_at
       end
     end
     panel "Accounts" do
@@ -128,6 +129,7 @@ ActiveAdmin.register User do
             a.created.nil? ? '-' : status_tag(a.created, a.created ? :yes : :no)
         end
         column :ignored, as: :check_box
+        column :created_at
         column :updated_at
       end
     end

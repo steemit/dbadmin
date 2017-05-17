@@ -4,9 +4,9 @@ module ApplicationHelper
       icon = '&#10004;'.html_safe
       color = '#0c0'
       checkmark = content_tag(:span, icon, :style => "color: #{color}; cursor: default;", title: title)
-      return text ? "#{text} #{checkmark}".html_safe : checkmark
+      return text ? "#{text} #{checkmark}".html_safe : checkmark.html_safe
     else
-      text
+      text.html_safe
     end
   end
 end

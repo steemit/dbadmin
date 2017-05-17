@@ -11,11 +11,11 @@ class User < ActiveRecord::Base
     scope :waiting_list, -> { where(:account_status => 'waiting') }
 
     def email_identity
-      return @email_identity ||= self.identities.where(provider: 'email').order('id desc').first
+      return @email_identity ||= self.identities.where(provider: 'email').order('verified desc, id desc').first
     end
 
     def phone_identity
-      return @phone_identity ||= self.identities.where(provider: 'phone').order('id desc').first
+      return @phone_identity ||= self.identities.where(provider: 'phone').order('verified desc, id desc').first
     end
 
     def display_email
