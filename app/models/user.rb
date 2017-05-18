@@ -45,7 +45,9 @@ class User < ActiveRecord::Base
       return 'Cannot detect country by IP (needed for phone verification); ' if cc.blank? or cc == '-'
       res = ''
       pi = phone_identity
-      if pi and pi.score and pi.score >= 400
+      score_requirement = 400
+      score_requirement = 900 if phone.countries.any?{|c| c == 'US' || c == 'GB' || c == 'AU' || c == 'BE' || c == 'FI' || c == 'FR' || c == 'DE' || c == 'IT' || c == 'NL' || c == 'NO' || c == 'ES' || c == 'SE' || c == 'CH' }
+      if pi and pi.score and pi.score >= score_requirement
         res = "TeleSign score is too high: #{phone_identity.score}; "
       elsif !pi or !pi.score
         res = "There is no phone or no TeleSign score; "
@@ -120,6 +122,7 @@ class User < ActiveRecord::Base
       return false unless eid and eid.email # and eid.verified
       pid = self.phone_identity
       return false unless pid and pid.phone # and pid.verified
+      return false unless eid.verified or pid.verified
       return true
     end
 

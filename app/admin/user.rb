@@ -192,12 +192,12 @@ ActiveAdmin.register User do
         eid = user.email_identity
         next unless eid
         # next unless eid.email and eid.email.match(/@(gmail|yahoo|hotmail|outlook)\.com$/i)
-        # next unless eid.verified
+        next unless eid.verified
 
         pid = user.phone_identity
         next unless pid
         next unless pid.verified
-        next unless pid.score and pid.score < 400
+        # next unless pid.score and pid.score < 400
         # next unless user.get_phone.countries.include?('US')
         # next unless user.country_code == 'US'
 
