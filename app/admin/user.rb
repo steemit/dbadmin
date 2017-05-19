@@ -133,6 +133,15 @@ ActiveAdmin.register User do
         column :updated_at
       end
     end
+    panel "UserAttributes" do
+      table_for user.user_attributes do
+        column :id
+        column :type_of
+        column :value
+        column :created_at
+        column :updated_at
+      end
+    end
     default_main_content
   end
 
