@@ -136,7 +136,6 @@ ActiveAdmin.register User do
     end
     panel "UserAttributes" do
       table_for user.user_attributes do
-        column :id
         column :type_of
         column :value
         column :created_at
