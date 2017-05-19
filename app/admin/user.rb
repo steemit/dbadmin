@@ -28,6 +28,7 @@ ActiveAdmin.register User do
   scope :all
   scope :waiting_list
   includes :identities
+  includes :user_attributes
 
   index do
     # column :pic do |u|
@@ -129,6 +130,15 @@ ActiveAdmin.register User do
             a.created.nil? ? '-' : status_tag(a.created, a.created ? :yes : :no)
         end
         column :ignored, as: :check_box
+        column :created_at
+        column :updated_at
+      end
+    end
+    panel "UserAttributes" do
+      table_for user.user_attributes do
+        column :id
+        column :type_of
+        column :value
         column :created_at
         column :updated_at
       end

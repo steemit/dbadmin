@@ -7,6 +7,7 @@ class User < ActiveRecord::Base
 
     has_many :accounts, dependent: :destroy
     has_many :identities, dependent: :destroy
+    has_many :user_attributes, dependent: :destroy
 
     scope :waiting_list, -> { where(:account_status => 'waiting') }
 
