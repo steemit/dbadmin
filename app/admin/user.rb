@@ -28,6 +28,7 @@ ActiveAdmin.register User do
   scope :all
   scope :waiting_list
   includes :identities
+  includes :user_attributes
 
   index do
     # column :pic do |u|
