@@ -6,7 +6,9 @@ module ApplicationHelper
       checkmark = content_tag(:span, icon, :style => "color: #{color}; cursor: default;", title: title)
       return text ? "#{text} #{checkmark}".html_safe : checkmark.html_safe
     else
-      text.html_safe
+      if text.present?
+        text.html_safe
+      end
     end
   end
 end
