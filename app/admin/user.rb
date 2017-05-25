@@ -134,7 +134,7 @@ ActiveAdmin.register User do
         column :updated_at
       end
     end
-    panel "UserAttributes" do
+    panel "User Attributes" do
       table_for user.user_attributes do
         column :type_of
         column :value
