@@ -28,7 +28,6 @@ ActiveAdmin.register User do
   scope :all
   scope :waiting_list
   includes :identities
-  includes :user_attributes
 
   index do
     # column :pic do |u|
@@ -135,7 +134,7 @@ ActiveAdmin.register User do
       end
     end
     panel "User Attributes" do
-      table_for user.user_attributes do
+      table_for UserAttributes.where(user_id: user.id) do
         column :type_of
         column :value
         column :created_at
