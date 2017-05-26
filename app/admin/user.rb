@@ -196,11 +196,9 @@ ActiveAdmin.register User do
       redirect_to :back
     end
     def auto_approve
-      start_page = params[:page] ? params[:page].to_i - 1 : 0
-      order = params[:order] || 'id_desc'
       approved = 0
       errors = 0
-      User.order(order.gsub('_', ' ')).offset(start_page * per_page).limit(per_page).each do |user|
+      collection.each do |user|
         next unless user.account_status == 'waiting'
         next unless user.account
         eid = user.email_identity
@@ -227,7 +225,7 @@ ActiveAdmin.register User do
       end
 
       flash_type = errors > 0 ? :error : :notice
-      flash[flash_type] = "Auto-approved #{approved} accounts." + (errors > 0 ? " Errors: #{erros}" : "")
+      flash[flash_type] = "Auto-approved #{approved} accounts." + (errors > 0 ? " Errors: #{errors}" : "")
       redirect_to :back
     end
   end
