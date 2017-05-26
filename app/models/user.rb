@@ -139,7 +139,7 @@ class User < ActiveRecord::Base
         logger.error "!!! Signup approve error: user's email not found [##{self.id}]"
         return
       end
-      try
+      begin
         data = JSON.parse(%Q{{
           "personalizations": [
             {
@@ -176,6 +176,7 @@ class User < ActiveRecord::Base
         logger.error "Caught SendGrid error: #{e.message}"
         logger.error e.backtrace.join("\n")
         result[:error] = e.message
+      end
       return result
     end
 
