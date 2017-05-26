@@ -180,8 +180,13 @@ ActiveAdmin.register User do
     end
     def approve
       @user = User.find(params[:id])
-      @user.approve!
-      flash[:notice] = "Approved user #{@user.email}"
+      result = @user.approve
+      if result[:error]
+        flash[:error] = "Failed to approve user #{@user.email} - #{result[:error]}"
+      else
+        flash[:notice] = "Approved user #{@user.email}"
+      end
+
       redirect_to :back
     end
     def reject
@@ -194,6 +199,7 @@ ActiveAdmin.register User do
       start_page = params[:page] ? params[:page].to_i - 1 : 0
       order = params[:order] || 'id_desc'
       approved = 0
+      errors = 0
       User.order(order.gsub('_', ' ')).offset(start_page * per_page).limit(per_page).each do |user|
         next unless user.account_status == 'waiting'
         next unless user.account
@@ -212,11 +218,16 @@ ActiveAdmin.register User do
         issues = user.issues
         next if !issues[:phone].blank? or !issues[:email].blank?
 
-        user.approve!
-        approved += 1
+        result = user.approve
+        if result[:error]
+          errors += 1
+        else
+          approved += 1
+        end
       end
 
-      flash[:notice] = "Auto-approved #{approved} accounts."
+      flash_type = errors > 0 ? :error : :notice
+      flash[flash_type] = "Auto-approved #{approved} accounts." + (errors > 0 ? " Errors: #{erros}" : "")
       redirect_to :back
     end
   end

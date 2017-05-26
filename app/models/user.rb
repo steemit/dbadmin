@@ -127,7 +127,8 @@ class User < ActiveRecord::Base
       return true
     end
 
-    def approve!
+    def approve
+      result = {}
       logger.info "Approve user ##{id} #{display_name}"
       # if self.account_status == 'approved' or self.account_status == 'created'
       #   logger.error "User ##{id} #{display_name} is already approved or created"
@@ -138,33 +139,44 @@ class User < ActiveRecord::Base
         logger.error "!!! Signup approve error: user's email not found [##{self.id}]"
         return
       end
-      data = JSON.parse(%Q{{
-        "personalizations": [
-          {
-            "to": [
-              {
-                "email": "#{eid.email}"
-              }
-            ],
-            "substitutions": {
-              "confirmation_code": "#{eid.confirmation_code}"
-            },
-            "subject": "Your Steemit account has been approved"
-          }
-        ],
-        "from": {
-          "email": "#{ENV['SDC_SENDGRID_FROM']}"
-        },
-        "template_id": "#{ENV['SDC_SENDGRID_APPROVETEMPLATE']}"
-      }})
-      sg = SendGrid::API.new(api_key: ENV['SDC_SENDGRID_API_KEY'])
-      response = sg.client.mail._("send").post(request_body: data)
-      logger.info "Sent signup approved email to #{eid.email} with status code #{response.status_code}"
-      if response.status_code.to_i >= 300
-        logger.error response.inspect
-      end
+      try
+        data = JSON.parse(%Q{{
+          "personalizations": [
+            {
+              "to": [
+                {
+                  "email": "#{eid.email}"
+                }
+              ],
+              "substitutions": {
+                "confirmation_code": "#{eid.confirmation_code}"
+              },
+              "subject": "Your Steemit account has been approved"
+            }
+          ],
+          "from": {
+            "email": "#{ENV['SDC_SENDGRID_FROM']}"
+          },
+          "template_id": "#{ENV['SDC_SENDGRID_APPROVETEMPLATE']}"
+        }})
+        sg = SendGrid::API.new(api_key: ENV['SDC_SENDGRID_API_KEY'])
+        response = sg.client.mail._("send").post(request_body: data)
+        if response.status_code.to_i >= 300
+          logger.error 'SendGrid error', response.inspect
+          result[:error] = response
+          return result
+        else
+          logger.info "Sent signup approval email to #{eid.email} with status code #{response.status_code}"
+        end
 
-      self.update_attribute(:account_status, 'approved')
+        self.update_attribute(:account_status, 'approved')
+        result[:sucess] = true
+        return result
+      rescue => e
+        logger.error "Caught SendGrid error: #{e.message}"
+        logger.error e.backtrace.join("\n")
+        result[:error] = e.message
+      return result
     end
 
     def reject!
