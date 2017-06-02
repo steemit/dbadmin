@@ -151,7 +151,10 @@ ActiveAdmin.register User do
   filter :updated_at
 
   action_item do
-    link_to "Auto-approve Page", auto_approve_admin_users_path(params), :method => :put
+    link_to "Auto-approve Everyone Waiting", auto_approve_everyone_admin_users_path(params), :method => :put
+  end
+  action_item do
+    link_to "Auto-approve Waiting w/o Issues", auto_approve_admin_users_path(params), :method => :put
   end
 
   form do |f|
@@ -168,16 +171,16 @@ ActiveAdmin.register User do
   member_action :approve, :method => :put
   member_action :reject, :method => :put
   collection_action :auto_approve, :method => :put
+  collection_action :auto_approve_everyone, :method => :put
 
   controller do
-    # def scoped_collection
-    #   User.eager_load(:identities).where('users.id > 135310')
-    # end
+
     def invite
       @user = User.find(params[:id])
       @user.invite!
       redirect_to action: "show", id: @user.id
     end
+
     def approve
       @user = User.find(params[:id])
       result = @user.approve
@@ -189,12 +192,14 @@ ActiveAdmin.register User do
 
       redirect_to :back
     end
+
     def reject
       @user = User.find(params[:id])
       @user.reject!
       flash[:notice] = "Rejected user #{@user.email}"
       redirect_to :back
     end
+
     def auto_approve
       approved = 0
       errors = 0
@@ -203,19 +208,12 @@ ActiveAdmin.register User do
         next unless user.account
         eid = user.email_identity
         next unless eid
-        # next unless eid.email and eid.email.match(/@(gmail|yahoo|hotmail|outlook)\.com$/i)
         next unless eid.verified
-
         pid = user.phone_identity
         next unless pid
         next unless pid.verified
-        # next unless pid.score and pid.score < 400
-        # next unless user.get_phone.countries.include?('US')
-        # next unless user.country_code == 'US'
-
         issues = user.issues
         next if !issues[:phone].blank? or !issues[:email].blank?
-
         result = user.approve
         if result[:error]
           errors += 1
@@ -223,12 +221,31 @@ ActiveAdmin.register User do
           approved += 1
         end
       end
-
       flash_type = errors > 0 ? :error : :notice
       flash[flash_type] = "Auto-approved #{approved} accounts." + (errors > 0 ? " Errors: #{errors}" : "")
       redirect_to :back
     end
-  end
 
+    def auto_approve_everyone
+      approved = 0
+      errors = 0
+      collection.each do |user|
+        next unless user.account_status == 'waiting'
+        next unless user.account
+        eid = user.email_identity
+        next unless eid
+        result = user.approve
+        if result[:error]
+          errors += 1
+        else
+          approved += 1
+        end
+      end
+      flash_type = errors > 0 ? :error : :notice
+      flash[flash_type] = "Auto-approved #{approved} accounts." + (errors > 0 ? " Errors: #{errors}" : "")
+      redirect_to :back
+    end
+
+  end
 
 end
