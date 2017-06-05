@@ -40,7 +40,7 @@ ActiveAdmin.register Account do
       a = Account.find(params[:id])
       a.ignore!
       flash[:notice] = 'Account has been updated'
-      redirect_to admin_user_path(a.user)
+      redirect_to :back
     end
   end
 

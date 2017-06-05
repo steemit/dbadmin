@@ -129,6 +129,9 @@ ActiveAdmin.register User do
             a.created.nil? ? '-' : status_tag(a.created, a.created ? :yes : :no)
         end
         column :ignored, as: :check_box
+        column :actions do |a|
+          link_to('Ignore', ignore_admin_account_path(a), method: :put)
+        end
         column :created_at
         column :updated_at
       end
