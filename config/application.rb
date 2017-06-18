@@ -31,6 +31,5 @@ module Admin
 
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
-    config.web_console.whiny_requests = false
   end
 end
