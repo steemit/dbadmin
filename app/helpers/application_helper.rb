@@ -11,4 +11,22 @@ module ApplicationHelper
       end
     end
   end
+
+
+  def render_account_status_tag(u)
+    color = case u.account_status
+    when 'approved'
+      :ok
+    when 'waiting'
+      :orange
+    when 'rejected'
+      :red
+    when 'created'
+      :yes
+    else
+      :no
+    end
+    status_tag(u.account_status, color)
+  end
+  
 end
