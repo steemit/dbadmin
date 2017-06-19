@@ -8,22 +8,6 @@ def issues_to_status_tags(warnings)
   return res
 end
 
-def render_account_status_tag(u)
-  color = case u.account_status
-  when 'approved'
-    :ok
-  when 'waiting'
-    :orange
-  when 'rejected'
-    :red
-  when 'created'
-    :yes
-  else
-    :no
-  end
-  status_tag(u.account_status, color)
-end
-
 ActiveAdmin.register User do
   scope :all
   scope :waiting_list
@@ -50,7 +34,7 @@ ActiveAdmin.register User do
     end
     column :account
     column :account_status do |u|
-      render_account_status_tag(u)
+      render_account_status_tag(u, self)
     end
     column :created_at
     actions defaults: false do |u|

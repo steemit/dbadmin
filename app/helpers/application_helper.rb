@@ -13,7 +13,8 @@ module ApplicationHelper
   end
 
 
-  def render_account_status_tag(u)
+  def render_account_status_tag(u, context)
+    return '-' unless u
     color = case u.account_status
     when 'approved'
       :ok
@@ -26,7 +27,7 @@ module ApplicationHelper
     else
       :no
     end
-    status_tag(u.account_status, color)
+    context.status_tag(u.account_status, color)
   end
-  
+
 end

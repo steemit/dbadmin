@@ -5,9 +5,11 @@ ActiveAdmin.register Identity do
     index do
         column :id
         column :user do |rec|
-            rec.user ? link_to(rec.user.email || rec.email, admin_user_path(rec.user_id)) : nil
+            rec.user ? link_to(rec.user_id, admin_user_path(rec.user_id)) : nil
         end
-        # column :name
+        column :location do |rec|
+          rec.user and rec.user.location
+        end
         column :provider
         column :email_or_phone do |rec|
           rec.email || rec.display_phone
@@ -15,19 +17,21 @@ ActiveAdmin.register Identity do
         column :verified
         column :score
         column :account_status do |rec|
-            render_account_status_tag(rec.user)
+            render_account_status_tag(rec.user, self)
         end
         column :created_at
         actions defaults: false do |a|
             item 'View', admin_identity_path(a)
             u = a.user
-            if u.account_status == 'waiting'
-              if u.can_be_approved? then item('Approve', approve_admin_user_path(u), method: :put) end
-              item('Reject', reject_admin_user_path(u), method: :put)
-            elsif u.account_status == 'approved'
-              item('Reject', reject_admin_user_path(u), method: :put)
-            elsif u.account_status == 'rejected'
-              if u.can_be_approved? then item('Approve', approve_admin_user_path(u), method: :put) end
+            if u
+              if u.account_status == 'waiting'
+                if u.can_be_approved? then item('Approve', approve_admin_user_path(u), method: :put) end
+                item('Reject', reject_admin_user_path(u), method: :put)
+              elsif u.account_status == 'approved'
+                item('Reject', reject_admin_user_path(u), method: :put)
+              elsif u.account_status == 'rejected'
+                if u.can_be_approved? then item('Approve', approve_admin_user_path(u), method: :put) end
+              end
             end
         end
     end
