@@ -81,7 +81,7 @@ ActiveAdmin.register User do
         end
       end
       row :account_status do |u|
-        render_account_status_tag(u)
+        render_account_status_tag(u, self)
       end
       row :actions do |u|
         link_to('Approve', approve_admin_user_path(u), method: :put).html_safe
