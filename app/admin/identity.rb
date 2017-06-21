@@ -5,7 +5,7 @@ ActiveAdmin.register Identity do
     index do
         column :id
         column :user do |rec|
-            rec.user ? link_to(rec.user_id, admin_user_path(rec.user_id)) : nil
+            rec.user ? link_to(rec.user.email || rec.user_id, admin_user_path(rec.user_id)) : rec.user_id
         end
         column :location do |rec|
           rec.user and rec.user.location
@@ -95,6 +95,7 @@ ActiveAdmin.register Identity do
         def reject_all
           count = 0
           collection.each do |i|
+            next unless i.user.account_status == 'waiting'
             i.user.reject!
             count += 1
           end
