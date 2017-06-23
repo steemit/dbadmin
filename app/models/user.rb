@@ -160,13 +160,15 @@ class User < ActiveRecord::Base
           "template_id": "#{ENV['SDC_SENDGRID_APPROVETEMPLATE']}"
         }})
         sg = SendGrid::API.new(api_key: ENV['SDC_SENDGRID_API_KEY'])
-        response = sg.client.mail._("send").post(request_body: data)
-        if response.status_code.to_i >= 300
-          logger.error 'SendGrid error', response.inspect
-          result[:error] = response
-          return result
-        else
-          logger.info "Sent signup approval email to #{eid.email} with status code #{response.status_code}"
+        if Rails.env.production?
+          response = sg.client.mail._("send").post(request_body: data)
+          if response.status_code.to_i >= 300
+            logger.error 'SendGrid error', response.inspect
+            result[:error] = response
+            return result
+          else
+            logger.info "Sent signup approval email to #{eid.email} with status code #{response.status_code}"
+          end
         end
 
         self.update_attribute(:account_status, 'approved')
@@ -182,6 +184,10 @@ class User < ActiveRecord::Base
 
     def reject!
       self.update_attribute(:account_status, 'rejected')
+    end
+
+    def putonhold!
+      self.update_attribute(:account_status, 'onhold')
     end
 
 end

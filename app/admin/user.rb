@@ -134,7 +134,7 @@ ActiveAdmin.register User do
 
   filter :name
   filter :email
-  filter :account_status, as: :check_boxes, collection: ['waiting', 'approved', 'rejected', 'created']
+  filter :account_status, as: :check_boxes, collection: ['waiting', 'approved', 'rejected', 'created', 'onhold']
   filter :created_at
   filter :updated_at
 
@@ -222,11 +222,17 @@ ActiveAdmin.register User do
         next unless user.account
         eid = user.email_identity
         next unless eid
-        result = user.approve
-        if result[:error]
-          errors += 1
+        pid = user.phone_identity
+        next unless pid
+        if eid.verified and pid.verified
+          result = user.approve
+          if result[:error]
+            errors += 1
+          else
+            approved += 1
+          end
         else
-          approved += 1
+          user.putonhold!
         end
       end
       flash_type = errors > 0 ? :error : :notice

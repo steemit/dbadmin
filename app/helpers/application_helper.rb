@@ -24,6 +24,8 @@ module ApplicationHelper
       :red
     when 'created'
       :yes
+    when 'onhold'
+      :no
     else
       :no
     end
