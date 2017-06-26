@@ -221,9 +221,11 @@ ActiveAdmin.register User do
         next unless user.account_status == 'waiting'
         next unless user.account
         eid = user.email_identity
-        next unless eid
         pid = user.phone_identity
-        next unless pid
+        if !eid or !pid
+            user.putonhold!
+            next
+        end
         if eid.verified and pid.verified
           result = user.approve
           if result[:error]

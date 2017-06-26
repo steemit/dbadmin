@@ -159,8 +159,8 @@ class User < ActiveRecord::Base
           },
           "template_id": "#{ENV['SDC_SENDGRID_APPROVETEMPLATE']}"
         }})
-        sg = SendGrid::API.new(api_key: ENV['SDC_SENDGRID_API_KEY'])
         if Rails.env.production?
+          sg = SendGrid::API.new(api_key: ENV['SDC_SENDGRID_API_KEY'])        
           response = sg.client.mail._("send").post(request_body: data)
           if response.status_code.to_i >= 300
             logger.error 'SendGrid error', response.inspect
