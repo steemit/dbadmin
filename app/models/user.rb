@@ -80,14 +80,14 @@ class User < ActiveRecord::Base
       return nil
     end
 
-    def accounts_issue
-      accounts = self.all_created_accounts
-      return nil if accounts.count == 0
-      return 'This user has other accounts created using the same phone and email'
-    end
+    # def accounts_issue
+    #   accounts = self.all_created_accounts
+    #   return nil if accounts.count == 0
+    #   return 'This user has other accounts created using the same phone and email'
+    # end
 
     def issues
-      {phone: phone_issue, email: email_issue, accounts: accounts_issue}
+      {phone: phone_issue, email: email_issue}
     end
 
     def invite!
