@@ -1,13 +1,3 @@
-def issues_to_status_tags(warnings)
-  return '' if warnings.empty?
-  res = ''
-  puts warnings.inspect
-  warnings.each do |k, v|
-    status_tag(k, :warning, :title => v)
-  end
-  return res
-end
-
 ActiveAdmin.register User do
   # scope :all
   # scope :waiting_list
@@ -94,7 +84,7 @@ ActiveAdmin.register User do
           link_to i.id, admin_identity_path(i)
         end
         column :email_or_phone do |rec|
-          rec.email || rec.phone
+          rec.email.blank? ? rec.phone : rec.email
         end
         column :provider
         column :confirmation_code
@@ -117,6 +107,23 @@ ActiveAdmin.register User do
         column :actions do |a|
           link_to('Ignore', ignore_admin_account_path(a), method: :put)
         end
+        column :created_at
+        column :updated_at
+      end
+    end
+    panel "Other accounts created using the same phone and email" do
+      table_for user.all_created_accounts do
+        column :id do |a|
+          link_to a.id, admin_account_path(a)
+        end
+        column :user do |a|
+          link_to a.user_id, admin_user_path(a.user_id)
+        end
+        column :name
+        column :created do |a|
+            a.created.nil? ? '-' : status_tag(a.created, a.created ? :yes : :no)
+        end
+        column :ignored, as: :check_box
         column :created_at
         column :updated_at
       end

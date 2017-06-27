@@ -24,6 +24,10 @@ class User < ActiveRecord::Base
         return eid ? eid.email : nil
     end
 
+    def all_created_accounts
+      return @all_created_accounts ||= User.find_by_sql("select distinct a.* from identities ci join identities i on (i.email=ci.email and i.email<>'' and i.provider='email') or (i.phone=ci.phone and i.phone<>'' and i.provider='phone') join accounts a on a.user_id=i.user_id and a.created=1 and a.ignored<>1 and a.user_id<>ci.user_id where ci.user_id=#{self.id}")
+    end
+
     def get_phone
       return @phone if @phone or @phone == false
       phid = phone_identity
@@ -76,8 +80,14 @@ class User < ActiveRecord::Base
       return nil
     end
 
+    def accounts_issue
+      accounts = self.all_created_accounts
+      return nil if accounts.count == 0
+      return 'This user has other accounts created using the same phone and email'
+    end
+
     def issues
-      {phone: phone_issue, email: email_issue}
+      {phone: phone_issue, email: email_issue, accounts: accounts_issue}
     end
 
     def invite!
@@ -160,7 +170,7 @@ class User < ActiveRecord::Base
           "template_id": "#{ENV['SDC_SENDGRID_APPROVETEMPLATE']}"
         }})
         if Rails.env.production?
-          sg = SendGrid::API.new(api_key: ENV['SDC_SENDGRID_API_KEY'])        
+          sg = SendGrid::API.new(api_key: ENV['SDC_SENDGRID_API_KEY'])
           response = sg.client.mail._("send").post(request_body: data)
           if response.status_code.to_i >= 300
             logger.error 'SendGrid error', response.inspect
