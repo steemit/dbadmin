@@ -9,8 +9,8 @@ def issues_to_status_tags(warnings)
 end
 
 ActiveAdmin.register User do
-  scope :all
-  scope :waiting_list
+  # scope :all
+  # scope :waiting_list
   includes :identities
 
   index do

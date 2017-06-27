@@ -19,3 +19,7 @@
 .table_actions > a {
   margin-right: 10px;
 }
+
+table.index_table td.col-value {
+  word-break: break-all !important;
+}

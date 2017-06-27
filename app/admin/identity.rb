@@ -1,5 +1,5 @@
 ActiveAdmin.register Identity do
-    scope :all
+    # scope :all
     includes :user
 
     index do

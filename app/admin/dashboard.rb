@@ -52,7 +52,7 @@ ActiveAdmin.register_page "Dashboard" do
         panel "Recent Users" do
           table_for User.order("created_at desc").limit(30) do
             column :email do |u|
-              link_to u.email, admin_user_path(u)
+              link_to u.display_email, admin_user_path(u)
             end
             column :created_at
           end
@@ -60,17 +60,17 @@ ActiveAdmin.register_page "Dashboard" do
         end
       end
 
-      column do
-        panel "Recent Accounts" do
-          table_for Account.order("created_at desc").limit(30) do
-            column :name do |a|
-              link_to a.name, admin_account_path(a)
-            end
-            column :created_at
-          end
-          strong { link_to "View All Accounts", admin_accounts_path }
-        end
-      end
+      # column do
+      #   panel "Recent Accounts" do
+      #     table_for Account.order("created_at desc").limit(30) do
+      #       column :name do |a|
+      #         link_to a.name, admin_account_path(a)
+      #       end
+      #       column :created_at
+      #     end
+      #     strong { link_to "View All Accounts", admin_accounts_path }
+      #   end
+      # end
     end
 
 

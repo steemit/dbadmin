@@ -1,6 +1,6 @@
 ActiveAdmin.register Account do
-  scope :all
-  scope :bot
+  # scope :all
+  # scope :bot
   index do
     column :id
     column :user_id

@@ -1,7 +1,7 @@
 ActiveAdmin.register Arec do
   menu label: 'Account recovery'
-  scope :all
-  scope :by_email
+  # scope :all
+  # scope :by_email
 
   index do
     column :id
