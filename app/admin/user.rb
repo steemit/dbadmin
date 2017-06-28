@@ -218,15 +218,20 @@ ActiveAdmin.register User do
     end
 
     def auto_approve_everyone
+      total = 0
       approved = 0
+      discarded = 0
+      onhold = 0
       errors = 0
       collection.each do |user|
+        total += 1
         next unless user.account_status == 'waiting'
         next unless user.account
         eid = user.email_identity
         pid = user.phone_identity
         if !eid or !pid
             user.putonhold!
+            onhold += 1
             next
         end
         if eid.verified and pid.verified
@@ -247,13 +252,15 @@ ActiveAdmin.register User do
             end
           else
             user.discard!
+            discarded += 1
           end
         else
           user.putonhold!
+          onhold += 1
         end
       end
       flash_type = errors > 0 ? :error : :notice
-      flash[flash_type] = "Auto-approved #{approved} accounts." + (errors > 0 ? " Errors: #{errors}" : "")
+      flash[flash_type] = "Processed: #{total}; Approved: #{approved}; On Hold: #{onhold}; Discarded: #{discarded}; Errors: #{errors}"
       redirect_to :back
     end
 

@@ -48,7 +48,7 @@ class User < ActiveRecord::Base
 
     def phone_issue
       phone = get_phone
-      return 'Phone is empty; ' if not phone
+      return '' if not phone
       cc = country_code
       return 'Cannot detect country by IP (needed for phone verification); ' if cc.blank? or cc == '-'
       res = ''
@@ -75,7 +75,7 @@ class User < ActiveRecord::Base
 
     def email_issue
       eid = email_identity
-      return 'Email is empty' if !eid or eid.email.blank?
+      return '' if !eid or eid.email.blank?
       parsed_email = eid.email.match(/^.+\@.*?([\w\d-]+\.\w+)$/)
       return 'Incorrect email' unless parsed_email
       blocked_provider = List.where(kk: 'block-email-provider', value: parsed_email[1]).first
