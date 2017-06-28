@@ -116,6 +116,10 @@ ActiveAdmin.register User do
         column :display_name do |u|
           link_to u.display_name, admin_user_path(u)
         end
+        column :account
+        column :account_status do |u|
+          render_account_status_tag(u, self)
+        end
         column :created_at
         column :updated_at
       end
