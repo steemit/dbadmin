@@ -230,8 +230,15 @@ ActiveAdmin.register User do
             next
         end
         if eid.verified and pid.verified
-          other_users_with_same_identities = user.other_users
-          if other_users_with_same_identities.empty?
+          can_be_approved = true
+          user.other_users.each do |u|
+            if u.account_status == 'waiting' or u.account_status == 'approved' or u.account_status == 'onhold'
+              u.discard!
+            elsif u.account_status == 'created' or u.account_status == 'rejected'
+              can_be_approved = false
+            end
+          end
+          if can_be_approved
             result = user.approve
             if result[:error]
               errors += 1
