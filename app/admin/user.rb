@@ -111,19 +111,11 @@ ActiveAdmin.register User do
         column :updated_at
       end
     end
-    panel "Other accounts created using the same phone and email" do
-      table_for user.all_created_accounts do
-        column :id do |a|
-          link_to a.id, admin_account_path(a)
+    panel "Other signups used the same phone and email" do
+      table_for user.other_users do
+        column :display_name do |u|
+          link_to u.display_name, admin_user_path(u)
         end
-        column :user do |a|
-          link_to a.user_id, admin_user_path(a.user_id)
-        end
-        column :name
-        column :created do |a|
-            a.created.nil? ? '-' : status_tag(a.created, a.created ? :yes : :no)
-        end
-        column :ignored, as: :check_box
         column :created_at
         column :updated_at
       end
@@ -141,15 +133,15 @@ ActiveAdmin.register User do
 
   filter :name
   filter :email
-  filter :account_status, as: :check_boxes, collection: ['waiting', 'approved', 'rejected', 'created', 'onhold']
+  filter :account_status, as: :check_boxes, collection: ['waiting', 'approved', 'rejected', 'created', 'onhold', 'discarded']
   filter :created_at
   filter :updated_at
 
   action_item do
-    link_to "Auto-approve Everyone Waiting", auto_approve_everyone_admin_users_path(params), :method => :put
+    link_to "Auto-process All", auto_approve_everyone_admin_users_path(params), :method => :put
   end
   action_item do
-    link_to "Auto-approve Waiting w/o Issues", auto_approve_admin_users_path(params), :method => :put
+    link_to "Auto-approve All w/o Issues", auto_approve_admin_users_path(params), :method => :put
   end
 
   form do |f|
@@ -234,11 +226,16 @@ ActiveAdmin.register User do
             next
         end
         if eid.verified and pid.verified
-          result = user.approve
-          if result[:error]
-            errors += 1
+          other_users_with_same_identities = user.other_users
+          if other_users_with_same_identities.empty?
+            result = user.approve
+            if result[:error]
+              errors += 1
+            else
+              approved += 1
+            end
           else
-            approved += 1
+            user.discard!
           end
         else
           user.putonhold!

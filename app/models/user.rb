@@ -24,8 +24,11 @@ class User < ActiveRecord::Base
         return eid ? eid.email : nil
     end
 
-    def all_created_accounts
-      return @all_created_accounts ||= User.find_by_sql("select distinct a.* from identities ci join identities i on (i.email=ci.email and i.email<>'' and i.provider='email') or (i.phone=ci.phone and i.phone<>'' and i.provider='phone') join accounts a on a.user_id=i.user_id and a.created=1 and a.ignored<>1 and a.user_id<>ci.user_id where ci.user_id=#{self.id}")
+    def other_users
+      return @other_users if @other_users
+      other_users = User.find_by_sql("select distinct u.* from identities ci join identities i on i.email=ci.email and i.email<>'' and i.provider='email' join users u on u.id=i.user_id where u.id<>ci.user_id and ci.user_id=#{self.id}")
+      other_users.concat(User.find_by_sql("select distinct u.* from identities ci join identities i on i.phone=ci.phone and i.phone<>'' and i.provider='phone' join users u on u.id=i.user_id where u.id<>ci.user_id and ci.user_id=#{self.id}"))
+      @other_users = other_users.uniq{|u| u.id}
     end
 
     def get_phone
@@ -79,12 +82,6 @@ class User < ActiveRecord::Base
       return 'Provider is in blacklist' if blocked_provider
       return nil
     end
-
-    # def accounts_issue
-    #   accounts = self.all_created_accounts
-    #   return nil if accounts.count == 0
-    #   return 'This user has other accounts created using the same phone and email'
-    # end
 
     def issues
       {phone: phone_issue, email: email_issue}
@@ -198,6 +195,10 @@ class User < ActiveRecord::Base
 
     def putonhold!
       self.update_attribute(:account_status, 'onhold')
+    end
+
+    def discard!
+      self.update_attribute(:account_status, 'discarded')
     end
 
 end
