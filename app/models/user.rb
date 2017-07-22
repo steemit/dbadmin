@@ -137,14 +137,11 @@ class User < ActiveRecord::Base
     def approve
       result = {}
       logger.info "Approve user ##{id} #{display_name}"
-      # if self.account_status == 'approved' or self.account_status == 'created'
-      #   logger.error "User ##{id} #{display_name} is already approved or created"
-      #   return
-      # end
       eid = self.email_identity
       if !eid or eid.confirmation_code.blank? or eid.email.blank?
         logger.error "!!! Signup approve error: user's email not found [##{self.id}]"
-        return
+        result[:error] = 'no email'
+        return result
       end
       begin
         data = JSON.parse(%Q{{
@@ -177,10 +174,8 @@ class User < ActiveRecord::Base
             logger.info "Sent signup approval email to #{eid.email} with status code #{response.status_code}"
           end
         end
-
         self.update_attribute(:account_status, 'approved')
         result[:sucess] = true
-        return result
       rescue => e
         logger.error "Caught SendGrid error: #{e.message}"
         logger.error e.backtrace.join("\n")
