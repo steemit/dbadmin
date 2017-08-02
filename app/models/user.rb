@@ -114,14 +114,22 @@ class User < ActiveRecord::Base
 
     def country
         return '' unless remote_ip
-        @georec = @@geodb.lookup(remote_ip) unless @georec
-        return @georec ? @georec[:country_name] : '-'
+        begin
+            @georec = @@geodb.lookup(remote_ip) unless @georec
+            return @georec ? @georec[:country_name] : '-'
+        rescue => e
+            logger.error "geodb.lookup error: #{e.message}"
+        return '#'
     end
 
     def country_code
         return '' unless remote_ip
-        @georec = @@geodb.lookup(remote_ip) unless @georec
-        return @georec ? @georec[:country_code] : '-'
+        begin
+            @georec = @@geodb.lookup(remote_ip) unless @georec
+            return @georec ? @georec[:country_code] : '-'
+        rescue => e
+            logger.error "geodb.lookup error: #{e.message}"
+        return '#'
     end
 
     def account
