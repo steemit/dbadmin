@@ -109,6 +109,7 @@ class User < ActiveRecord::Base
             return @georec ? "#{@georec[:city]}, #{@georec[:region_name]}, #{@georec[:country_name]}" : '-'
         rescue => e
             logger.error "geodb.lookup error: #{e.message}"
+        end
         return '#'
     end
 
@@ -119,6 +120,7 @@ class User < ActiveRecord::Base
             return @georec ? @georec[:country_name] : '-'
         rescue => e
             logger.error "geodb.lookup error: #{e.message}"
+        end
         return '#'
     end
 
@@ -129,6 +131,7 @@ class User < ActiveRecord::Base
             return @georec ? @georec[:country_code] : '-'
         rescue => e
             logger.error "geodb.lookup error: #{e.message}"
+        end
         return '#'
     end
 
