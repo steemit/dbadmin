@@ -104,8 +104,12 @@ class User < ActiveRecord::Base
 
     def location
         return '' unless remote_ip
-        @georec = @@geodb.lookup(remote_ip) unless @georec
-        return @georec ? "#{@georec[:city]}, #{@georec[:region_name]}, #{@georec[:country_name]}" : '-'
+        begin
+            @georec = @@geodb.lookup(remote_ip) unless @georec
+            return @georec ? "#{@georec[:city]}, #{@georec[:region_name]}, #{@georec[:country_name]}" : '-'
+        rescue => e
+            logger.error "geodb.lookup error: #{e.message}"
+        return '#'
     end
 
     def country
