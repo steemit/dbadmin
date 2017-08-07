@@ -12,10 +12,10 @@ ActiveAdmin.register User do
     column :location
     column :ip do |u|
       if u.remote_ip
-        new_q = params[:q] || {}
-        new_q[:remote_ip_contains] = u.remote_ip
+        new_q = {remote_ip_contains: u.remote_ip}
         new_params = params
         new_params[:q] = new_q
+        new_params[:page] = nil
         link_to u.remote_ip, admin_users_path(params: new_params)
       end
     end
