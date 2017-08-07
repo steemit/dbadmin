@@ -10,6 +10,15 @@ ActiveAdmin.register User do
     column :id
     # column :name
     column :location
+    column :ip do |u|
+      if u.remote_ip
+        new_q = params[:q] || {}
+        new_q[:remote_ip_contains] = u.remote_ip
+        new_params = params
+        new_params[:q] = new_q
+        link_to u.remote_ip, admin_users_path(params: new_params)
+      end
+    end
     column :email do |u|
        u.email_identity ? text_with_checkmark(u.display_email, 'Confirmed', u.email_identity.verified) : nil
     end
@@ -135,17 +144,20 @@ ActiveAdmin.register User do
     default_main_content
   end
 
-  filter :name
+  filter :remote_ip
   filter :email
   filter :account_status, as: :check_boxes, collection: ['waiting', 'approved', 'rejected', 'created', 'onhold', 'discarded']
   filter :created_at
   filter :updated_at
 
-  action_item do
+  action_item(:auto_process_all) do
     link_to "Auto-process All", auto_approve_everyone_admin_users_path(params), :method => :put
   end
-  action_item do
+  action_item(:auto_approve) do
     link_to "Auto-approve All w/o Issues", auto_approve_admin_users_path(params), :method => :put
+  end
+  action_item(:reject_all) do
+    link_to "Reject All", reject_all_admin_users_path(params), :method => :put
   end
 
   form do |f|
@@ -163,6 +175,7 @@ ActiveAdmin.register User do
   member_action :reject, :method => :put
   collection_action :auto_approve, :method => :put
   collection_action :auto_approve_everyone, :method => :put
+  collection_action :reject_all, :method => :put
 
   controller do
 
@@ -261,6 +274,17 @@ ActiveAdmin.register User do
       end
       flash_type = errors > 0 ? :error : :notice
       flash[flash_type] = "Processed: #{total}; Approved: #{approved}; On Hold: #{onhold}; Discarded: #{discarded}; Errors: #{errors}"
+      redirect_to :back
+    end
+
+    def reject_all
+      count = 0
+      collection.each do |u|
+        next unless u.account_status == 'waiting'
+        u.reject!
+        count += 1
+      end
+      flash[:notice] = "Rejected #{count} users."
       redirect_to :back
     end
 

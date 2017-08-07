@@ -89,7 +89,7 @@ ActiveAdmin.register Identity do
             end
           end
           flash_type = errors > 0 ? :error : :notice
-          flash[flash_type] = "Approved #{approved} accounts." + (errors > 0 ? " Errors: #{errors}" : "")
+          flash[flash_type] = "Approved #{approved} users." + (errors > 0 ? " Errors: #{errors}" : "")
           redirect_to :back
         end
         def reject_all
@@ -99,7 +99,7 @@ ActiveAdmin.register Identity do
             i.user.reject!
             count += 1
           end
-          flash[:notice] = "Rejected #{count} accounts."
+          flash[:notice] = "Rejected #{count} users."
           redirect_to :back
         end
     end
