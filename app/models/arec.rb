@@ -54,4 +54,11 @@ class Arec < ActiveRecord::Base
     Account.where(name: self.account_name).first
   end
 
+  def was_recently_recovered
+    return false unless self.account_name
+    rec = Arec.where("id<>#{self.id} and account_name='#{self.account_name}' and request_submitted_at >= (NOW() - INTERVAL 30 DAY)").first
+    puts "was_recently_recovered:", rec.inspect
+    return !!rec
+  end
+
 end

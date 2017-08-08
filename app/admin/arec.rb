@@ -14,13 +14,14 @@ ActiveAdmin.register Arec do
        text_with_checkmark(rec.contact_email, 'Email matches original email', rec.email_match?)
     end
     column :owner_key
-    column :provider
-    column :status
     column(:approved) do |rec|
       rec.approved? ? status_tag( "yes", :ok ) : status_tag( "no" )
     end
-    column(:submitted) do |rec|
+    column(:recovered) do |rec|
       rec.request_submitted_at ? status_tag( "yes", :ok ) : status_tag( "no" )
+    end
+    column(:was_recently_recovered) do |rec|
+      rec.was_recently_recovered ? status_tag( "y", :red ) : status_tag( "n" )
     end
     column :created_at
     actions do |rec|
