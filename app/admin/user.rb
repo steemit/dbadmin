@@ -146,6 +146,7 @@ ActiveAdmin.register User do
 
   filter :remote_ip
   filter :email
+  filter :uid
   filter :account_status, as: :check_boxes, collection: ['waiting', 'approved', 'rejected', 'created', 'onhold', 'discarded']
   filter :created_at
   filter :updated_at
