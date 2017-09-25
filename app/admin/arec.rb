@@ -47,7 +47,7 @@ ActiveAdmin.register Arec do
     def approve
       @arec = Arec.find(params[:id])
       if !@arec.approved?
-        @arec.approve!
+        @arec.approve!(current_admin_user)
         flash[:notice] = 'Your approved account recovery request'
       else
         flash[:notice] = 'Account recovery request was already approved, please reuse the link below!'

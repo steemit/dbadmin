@@ -81,7 +81,7 @@ ActiveAdmin.register Identity do
             next unless user.account
             eid = user.email_identity
             next unless eid
-            result = user.approve
+            result = user.approve(current_admin_user)
             if result[:error]
               errors += 1
             else
@@ -96,7 +96,7 @@ ActiveAdmin.register Identity do
           count = 0
           collection.each do |i|
             next unless i.user.account_status == 'waiting'
-            i.user.reject!
+            i.user.reject!(current_admin_user)
             count += 1
           end
           flash[:notice] = "Rejected #{count} users."

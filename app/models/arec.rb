@@ -9,8 +9,18 @@ class Arec < ActiveRecord::Base
     self.status == 'confirmed' && self.validation_code
   end
 
-  def approve!
+  def approve!(current_admin_user = nil)
     logger.info "Approve account recovery ##{id} #{contact_email}"
+
+
+    ActiveAdmin::Comment.create(
+      resource_id: self.id,
+      resource_type: 'Arec',
+      namespace: 'admin',
+      body: "approved by #{current_admin_user.email}",
+      author_id: current_admin_user.id,
+      author_type: 'AdminUser'
+    )
 
     code = SecureRandom.hex(10)
     self.update_attributes(status: 'confirmed', validation_code: code)
@@ -34,13 +44,14 @@ class Arec < ActiveRecord::Base
       },
       "template_id": "7d7f0217-2e45-4168-9cb5-ca90d4a7591a"
     }})
-    sg = SendGrid::API.new(api_key: ENV['SDC_SENDGRID_API_KEY'])
-    response = sg.client.mail._("send").post(request_body: data)
-    logger.info "Sent arec approved email to #{self.contact_email} with status code #{response.status_code}"
-    if response.status_code.to_i >= 300
-      logger.error response.inspect
+    if Rails.env.production?
+      sg = SendGrid::API.new(api_key: ENV['SDC_SENDGRID_API_KEY'])
+      response = sg.client.mail._("send").post(request_body: data)
+      logger.info "Sent arec approved email to #{self.contact_email} with status code #{response.status_code}"
+      if response.status_code.to_i >= 300
+        logger.error response.inspect
+      end
     end
-
   end
 
   def email_match?
