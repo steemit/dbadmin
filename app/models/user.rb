@@ -149,7 +149,7 @@ class User < ActiveRecord::Base
       return true
     end
 
-    def approve
+    def approve(current_admin_user = nil)
       result = {}
       logger.info "Approve user ##{id} #{display_name}"
       eid = self.email_identity
@@ -158,6 +158,18 @@ class User < ActiveRecord::Base
         result[:error] = 'no email'
         return result
       end
+
+      if current_admin_user
+        ActiveAdmin::Comment.create(
+          resource_id: self.id,
+          resource_type: 'User',
+          namespace: 'admin',
+          body: "approved by #{current_admin_user.email}",
+          author_id: current_admin_user.id,
+          author_type: 'AdminUser'
+        )
+      end
+
       begin
         data = JSON.parse(%Q{{
           "personalizations": [
@@ -199,7 +211,17 @@ class User < ActiveRecord::Base
       return result
     end
 
-    def reject!
+    def reject!(current_admin_user = nil)
+      if current_admin_user
+        ActiveAdmin::Comment.create(
+          resource_id: self.id,
+          resource_type: 'User',
+          namespace: 'admin',
+          body: "rejected by #{current_admin_user.email}",
+          author_id: current_admin_user.id,
+          author_type: 'AdminUser'
+        )
+      end
       self.update_attribute(:account_status, 'rejected')
     end
 

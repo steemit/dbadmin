@@ -188,7 +188,7 @@ ActiveAdmin.register User do
 
     def approve
       @user = User.find(params[:id])
-      result = @user.approve
+      result = @user.approve(current_admin_user)
       if result[:error]
         flash[:error] = "Failed to approve user #{@user.email} - #{result[:error]}"
       else
@@ -200,7 +200,7 @@ ActiveAdmin.register User do
 
     def reject
       @user = User.find(params[:id])
-      @user.reject!
+      @user.reject!(current_admin_user)
       flash[:notice] = "Rejected user #{@user.email}"
       redirect_to :back
     end
@@ -219,7 +219,7 @@ ActiveAdmin.register User do
         next unless pid.verified
         issues = user.issues
         next if !issues[:phone].blank? or !issues[:email].blank?
-        result = user.approve
+        result = user.approve(current_admin_user)
         if result[:error]
           errors += 1
         else
@@ -258,7 +258,7 @@ ActiveAdmin.register User do
             end
           end
           if can_be_approved
-            result = user.approve
+            result = user.approve(current_admin_user)
             if result[:error]
               errors += 1
             else
@@ -282,7 +282,7 @@ ActiveAdmin.register User do
       count = 0
       collection.each do |u|
         next unless u.account_status == 'waiting'
-        u.reject!
+        u.reject!(current_admin_user)
         count += 1
       end
       flash[:notice] = "Rejected #{count} users."
