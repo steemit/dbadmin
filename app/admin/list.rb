@@ -3,7 +3,7 @@ ActiveAdmin.register List, as: 'Value' do
   scope :blocked_emails
   scope :blocked_phones
   menu label: 'Vars/Params'
-  index do
+  index index :download_links => false do
     column :id
     column 'Key', :kk
     column :value

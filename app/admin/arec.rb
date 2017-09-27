@@ -3,7 +3,7 @@ ActiveAdmin.register Arec do
   # scope :all
   # scope :by_email
 
-  index do
+  index index :download_links => false do
     column :id
     column :user_id
     column :account do |rec|
