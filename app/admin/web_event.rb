@@ -1,6 +1,6 @@
 ActiveAdmin.register WebEvent do
   menu label: 'Events'
-  index do
+  index index :download_links => false do
     column :id
     column :event_type
     column :value

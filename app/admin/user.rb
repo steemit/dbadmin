@@ -3,7 +3,7 @@ ActiveAdmin.register User do
   # scope :waiting_list
   includes :identities
 
-  index do
+  index index :download_links => false do
     # column :pic do |u|
     #   image_tag u.picture_small, size: "32x32"
     # end

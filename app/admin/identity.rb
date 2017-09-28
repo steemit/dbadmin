@@ -2,7 +2,7 @@ ActiveAdmin.register Identity do
     # scope :all
     includes :user
 
-    index do
+    index :download_links => false do
         column :id
         column :user do |rec|
             rec.user ? link_to(rec.user.email || rec.user_id, admin_user_path(rec.user_id)) : rec.user_id
