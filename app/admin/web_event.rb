@@ -10,6 +10,12 @@ ActiveAdmin.register WebEvent do
     end
   end
 
-  filter :event_type, as: :check_boxes, collection: ['csp_violation', 'client_error', 'api/login_account', 'login_attempt']
+  # filter :event_type, as: :check_boxes, collection: ['csp_violation', 'client_error', 'api/login_account', 'login_attempt']
+
+  controller do
+    def scoped_collection
+      WebEvent.where(event_type: 'client_error')
+    end
+  end
 
 end
