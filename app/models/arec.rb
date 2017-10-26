@@ -58,7 +58,7 @@ class Arec < ActiveRecord::Base
     account = Account.where(name: self.account_name).first
     return false unless account
     eid = account.user.email_identity
-    return (eid and eid.email and eid.email == self.contact_email)
+    return (eid and eid.email and (eid.email == self.contact_email or account.user.email == self.contact_email))
   end
 
   def account
