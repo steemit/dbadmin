@@ -16,8 +16,7 @@ class User < ActiveRecord::Base
     end
 
     def contains_email_identity?(check_email)
-      eids = self.identities.where(provider: 'email').order('verified desc, id desc').all
-      return eids.any?{|eid| eid.email == check_email}
+      return !!self.identities.where(provider: 'email', email: check_email).first
     end
 
     def phone_identity
