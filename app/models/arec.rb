@@ -12,7 +12,6 @@ class Arec < ActiveRecord::Base
   def approve!(current_admin_user = nil)
     logger.info "Approve account recovery ##{id} #{contact_email}"
 
-
     ActiveAdmin::Comment.create(
       resource_id: self.id,
       resource_type: 'Arec',
@@ -55,14 +54,12 @@ class Arec < ActiveRecord::Base
   end
 
   def email_match?
-    account = Account.where(name: self.account_name).first
     return false unless account
-    eid = account.user.email_identity
-    return (eid and eid.email and eid.email == self.contact_email)
+    return account.user.contains_email_identity?(self.contact_email)
   end
 
   def account
-    Account.where(name: self.account_name).first
+    return @account ||= Account.where(name: self.account_name).first
   end
 
   def was_recently_recovered

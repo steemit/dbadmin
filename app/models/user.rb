@@ -15,6 +15,10 @@ class User < ActiveRecord::Base
       return @email_identity ||= self.identities.where(provider: 'email').order('verified desc, id desc').first
     end
 
+    def contains_email_identity?(check_email)
+      return !!self.identities.where(provider: 'email', email: check_email).first
+    end
+
     def phone_identity
       return @phone_identity ||= self.identities.where(provider: 'phone').order('verified desc, id desc').first
     end
