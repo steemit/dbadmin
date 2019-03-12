@@ -71,7 +71,7 @@ ActiveAdmin.register User do
       row :invitation_link do |rec|
         if rec.email_identity
           if rec.email_identity.confirmation_code
-            text_field_tag 'invitation_link', "https://wallet.steemit.co/start/#{rec.email_identity.confirmation_code}",  size: 60, disabled: true
+            text_field_tag 'invitation_link', "https://steemitwallet.com/start/#{rec.email_identity.confirmation_code}",  size: 60, disabled: true
           else
             link_to('Generate', invite_admin_user_path(rec), method: :put)
           end

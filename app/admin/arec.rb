@@ -26,7 +26,7 @@ ActiveAdmin.register Arec do
     column :created_at
     actions do |rec|
       if rec.approved?
-        link_to('Recover Link', 'https://wallet.steemit.co/account_recovery_confirmation/' + rec.validation_code)
+        link_to('Recover Link', 'https://steemitwallet.com/account_recovery_confirmation/' + rec.validation_code)
       else
         link_to('Approve', approve_admin_arec_path(rec), method: :put)
       end
