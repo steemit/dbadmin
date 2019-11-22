@@ -55,6 +55,7 @@ class Arec < ActiveRecord::Base
 
   def email_match?
     return false unless account
+    return false unless account.user
     return account.user.contains_email_identity?(self.contact_email)
   end
 
